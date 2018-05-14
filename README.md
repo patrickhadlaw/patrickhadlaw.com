@@ -25,13 +25,14 @@ $ npm install
 $ ng build --prod
 $ cp -r dist/* ../com/
 $ cd ..
+$ go get golang.org/x/crypto/ssh/terminal
 $ go build patrick-hadlaw-server.go
 ```
 
 ### Setup
 * To be able to use contact features a mail server will need to be hosted
 * The mail server should have an address of noreply@&lt;smtp-host&gt;
-* When running server `--mail` flag should be set to your smtp-host name --smtp-port should be set and --smtp should be set to your smtp server
+* When running server `--mail` flag should be set to your smtp-host name `--smtp-port` should be set and `--smtp` should be set to your smtp server
 * Upon running server you will be prompted for password for contact@&lt;smtp-host&gt; as well as the target contact email address
 * Resume should be placed in project dir as RESUME.pdf
 
