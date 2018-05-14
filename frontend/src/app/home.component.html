@@ -1,0 +1,73 @@
+<div class="container">
+    <div class="header">
+        <div class="logo">&lt;dev/&gt;</div>
+        <div class="right-header-content">
+            <div class="description">Hello, my name is Patrick Hadlaw. I am a Computer Engineering student at the University of Waterloo.</div>
+            <div class="row">
+                <a href="#contact" style="text-decoration: none;"><div class="header-button">Contact</div></a>
+                <a href="../../../RESUME.pdf" download="RESUME.pdf" style="text-decoration: none;"><div class="header-button">Résumé</div></a>
+            </div>
+        </div>
+    </div>
+    
+    <app-color-bar colorA="#000000" colorB="#f2f2f2"></app-color-bar>
+    
+    <app-hero src="../assets/avatar.jpg" backgroundColor="rgb(250, 250, 250)" color="rgb(50, 50, 50)">
+        Hello, I'm an Engineering student from the town of Wolfville, Nova Scotia.
+        I enjoy building software applications ranging from front-end and back-end software to computer graphics and hardware level software.<br/>
+        If your looking for an co-op experienced with the full development cycle willing to attack your software development needs, feel free to get in touch with me.<br/>
+        <b>A copy of my résumé and my contact information can be found below.</b>
+    </app-hero>
+    
+    <br/><br/><br/><br/>
+
+    <app-banner color="rgb(50, 50, 50)" backgroundColor="rgb(250, 250, 250)">
+        <div class="row-wrapper">
+            <a class="social-icon-container" [attr.href]="email"><svg class="social-icon"><svg:image xlink:href="../assets/email.svg" width="75px" height="75px" x="0" y="0"></svg:image></svg></a>
+            <a class="social-icon-container" [attr.href]="github"><svg class="social-icon"><svg:image xlink:href="../assets/github.svg" width="75px" height="75px" x="0" y="0"></svg:image></svg></a>
+            <a class="social-icon-container" [attr.href]="linkedin"><svg class="social-icon"><svg:image xlink:href="../assets/linkedin.svg" width="75px" height="75px" x="0" y="0"></svg:image></svg></a>
+        </div>
+        
+        <br/><br/>
+        
+        <div class="row-wrapper">
+            <app-image-button [style.margin]="'20px'" header="Résumé" href="../../../RESUME.pdf" download="RESUME.pdf" size="240" src="../assets/resume.png" button="Download" [attr.target]="target">My résumé</app-image-button>
+            <app-image-button [style.margin]="'20px'" href="https://github.com/patrickhadlaw/patrickhadlaw.com" size="240" src="../assets/website.png" button="Click here" [attr.target]="target">Website repository</app-image-button>            
+        </div>
+        
+        <br/>
+
+        <div class="quote-container">
+            <div style="max-width: 20cm; margin-left: 1cm; margin-right: 1cm; text-align: center;">
+                "To the optimist, the glass is half full.
+                To the pessimist, the glass is half empty.
+                To the engineer, the glass is twice as big as it needs to be" - Anonymous
+            </div>
+        </div>
+
+        <img src="../assets/angular.png" [style.width.cm]="4" [style.marginTop.cm]="1"/>
+        <br/>
+        <b [style.fontSize.px]="18" [style.marginBottom.cm]="2.5">This site was built by me using Angular 5</b>
+
+        <div class="contact-container">
+            <a name="contact"><h1>Contact</h1></a>
+            <b>Phone: 1(902)670-4383</b><br/>
+            <b>Email: pshadlaw@uwaterloo.ca</b><br/>
+        </div>
+
+        <h1>Send message</h1>
+
+        <b class="textbox-title">Full name:</b>
+        <input #messageName type="text" placeholder="Your full name.." class="contact-textbox"/>
+        <br/>
+        <b class="textbox-title">Email:</b>
+        <input #messageEmail type="text" placeholder="Your email address.." class="contact-textbox"/>
+        <br/><br/>
+        <b class="textbox-title">Message:</b>
+        <textarea #messageContent type="text" [style.height.px]="150" class="contact-textbox white" style="resize: vertical; min-height: 2cm" placeholder="Your message.."></textarea>
+        <div (click)="sendMessage()" [attr.class]="sendButtonStyle()">Send</div>
+    </app-banner>
+    <div class="footer">
+        Copyright © Patrick Hadlaw
+    </div>
+</div>

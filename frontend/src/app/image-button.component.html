@@ -1,0 +1,22 @@
+<div (mouseover)="mouseOver = true" (mouseout)="mouseOver = false" [style.width.px]="size" [style.height.px]="size" class="image-button">
+    <div #imageButton class="image-button container">
+        <img [style.width.px]="size" [style.height.px]="size" [attr.class]="mouseOver ? 'image-button image blurred' : 'image-button image'" [attr.src]="src"/>
+        <img 
+            *ngIf="download" 
+            [style.width.px]="size / 4"
+            [style.height.px]="size / 4"
+            [style.top.px]="size / 2 - size / 8"
+            [style.left.px]="size / 2 - size / 8"
+            [attr.class]="mouseOver ? 'image-button download-icon hover' : 'image-button download-icon'"
+            [attr.src]="'../assets/download.svg'"
+        />
+        <div class="image-button content" [style.height]="mouseOver ? '100%' : '0'">
+            <ng-content></ng-content>
+            <br/>
+            <br/>
+            <div>
+                <a [attr.href]="href" download="{{download}}"><button mat-raised-button color="primary">{{button}}</button></a>
+            </div>
+        </div>
+    </div>
+</div>
