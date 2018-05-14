@@ -1,2 +1,8 @@
-# Ignore Resume
+# Project files
 *.pdf
+*.log
+*.exe
+
+# Ignore web root
+com/*
+!com/.gitkeep
