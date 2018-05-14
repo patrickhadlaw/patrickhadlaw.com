@@ -79,6 +79,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Contact-email-account: ")
 	contactEmail, _ := reader.ReadString('\n')
+	contactEmail = contactEmail[0 : len(contactEmail)-2] // Remove newline
 
 	fmt.Print("Mail-server-password: ")
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
