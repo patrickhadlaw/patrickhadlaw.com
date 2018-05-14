@@ -65,6 +65,8 @@ func main() {
 	var smtpPort int
 	flag.IntVar(&smtpPort, "smtp-port", 587, "port for smtp requests")
 
+	flag.Parse()
+
 	file, err := os.OpenFile(logfile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening log-file: %v", err)
@@ -103,10 +105,6 @@ func main() {
 					if email, ok := js["email"].(string); ok {
 						if message, ok := js["message"].(string); ok {
 							auth := smtp.PlainAuth("", "contact@"+smtpHost, password, smtpServer)
-							if err != nil {
-								log.Printf("ERROR: failed to create smtp auth state")
-								w.WriteHeader(http.StatusInternalServerError)
-							}
 							msg := []byte("From: " + email + "\r\n" +
 								"Name: " + name + "\r\n" +
 								"Subject: patrickhadlaw.com Contact message\r\n" +
@@ -114,7 +112,7 @@ func main() {
 
 							err = smtp.SendMail(smtpServer+":"+strconv.Itoa(smtpPort), auth, "contact@"+smtpHost, []string{contactEmail}, msg)
 							if err != nil {
-								log.Printf("ERROR: failed to send mail")
+								log.Printf("ERROR: failed to send mail: %s", err.Error())
 								w.WriteHeader(http.StatusInternalServerError)
 							} else {
 								log.Printf("Sent message from: %s with email: %s", name, email)
