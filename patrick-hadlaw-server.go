@@ -57,7 +57,7 @@ func main() {
 	var smtpHost string
 	flag.StringVar(&smtpHost, "mail", "patrickhadlaw.com", "mail host address")
 	var smtpServer string
-	flag.StringVar(&smtpServer, "smtp", "localhost", "smtp server address")
+	flag.StringVar(&smtpServer, "smtp", "patrickhadlaw.com", "smtp server address")
 	var logfile string
 	flag.StringVar(&logfile, "log", "runtime.log", "name of log file")
 	var port int
@@ -107,8 +107,9 @@ func main() {
 						if message, ok := js["message"].(string); ok {
 							auth := smtp.PlainAuth("", "contact@"+smtpHost, password, smtpServer)
 							msg := []byte("From: " + email + "\r\n" +
+								"To: " + contactEmail + "\r\n" +
+								"Subject: patrickhadlaw.com Contact message\r\n\r\n" +
 								"Name: " + name + "\r\n" +
-								"Subject: patrickhadlaw.com Contact message\r\n" +
 								"\r\n" + message)
 
 							err = smtp.SendMail(smtpServer+":"+strconv.Itoa(smtpPort), auth, "contact@"+smtpHost, []string{contactEmail}, msg)
