@@ -106,11 +106,13 @@ func main() {
 					if email, ok := js["email"].(string); ok {
 						if message, ok := js["message"].(string); ok {
 							auth := smtp.PlainAuth("", "contact@"+smtpHost, password, smtpServer)
-							msg := []byte("From: " + email + "\r\n" +
+							msg := []byte("From: " + "contact@" + smtpHost + "\r\n" +
 								"To: " + contactEmail + "\r\n" +
 								"Subject: patrickhadlaw.com Contact message\r\n\r\n" +
+								"patrickhadlaw.com Contact message\r\n" +
 								"Name: " + name + "\r\n" +
-								"\r\n" + message)
+								"Email: " + email + "\r\n" +
+								"\r\nMessage: " + message)
 
 							err = smtp.SendMail(smtpServer+":"+strconv.Itoa(smtpPort), auth, "contact@"+smtpHost, []string{contactEmail}, msg)
 							if err != nil {
