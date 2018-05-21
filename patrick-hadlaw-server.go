@@ -16,10 +16,30 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-func LogHandler(handler http.Handler) http.Handler {
+type LoggingResponseWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func NewLoggingResponseWriter(w http.ResponseWriter) *LoggingResponseWriter {
+	return &LoggingResponseWriter{w, http.StatusOK}
+}
+
+func (writer *LoggingResponseWriter) WriteHeader(code int) {
+	writer.status = code
+	writer.ResponseWriter.WriteHeader(code)
+}
+
+func loggingMux(mux *http.ServeMux) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-		handler.ServeHTTP(w, r)
+
+		log.Printf("--> %s %s %s\n", r.RemoteAddr, r.Method, r.URL)
+
+		writer := NewLoggingResponseWriter(w)
+
+		mux.ServeHTTP(writer, r)
+
+		log.Printf("<-- %d - %s %s %s %s", writer.status, http.StatusText(writer.status), r.RemoteAddr, r.Method, r.URL)
 	})
 }
 
@@ -61,7 +81,11 @@ func main() {
 	var logfile string
 	flag.StringVar(&logfile, "log", "runtime.log", "name of log file")
 	var port int
-	flag.IntVar(&port, "port", 80, "port to run server on")
+	flag.IntVar(&port, "port", 443, "port to run server on")
+	var key string
+	flag.StringVar(&key, "key", "key.pem", "ssl key")
+	var certificate string
+	flag.StringVar(&certificate, "certificate", "certificate.pem", "ssl certificate file")
 	var smtpPort int
 	flag.IntVar(&smtpPort, "smtp-port", 587, "port for smtp requests")
 
@@ -108,8 +132,8 @@ func main() {
 							auth := smtp.PlainAuth("", "contact@"+smtpHost, password, smtpServer)
 							msg := []byte("From: " + "contact@" + smtpHost + "\r\n" +
 								"To: " + contactEmail + "\r\n" +
-								"Subject: patrickhadlaw.com Contact message\r\n\r\n" +
-								"patrickhadlaw.com Contact message\r\n" +
+								"Subject: Contact message\r\n\r\n" +
+								"Contact message from patrickhadlaw.com\r\n" +
 								"Name: " + name + "\r\n" +
 								"Email: " + email + "\r\n" +
 								"\r\nMessage: " + message)
@@ -138,11 +162,11 @@ func main() {
 
 	server := http.Server{
 		Addr:    ":" + strconv.Itoa(port),
-		Handler: LogHandler(serveMux),
+		Handler: loggingMux(serveMux),
 	}
 
 	log.Println("serving patrickhadlaw.com on port:", port)
-	err = server.ListenAndServe()
+	err = server.ListenAndServeTLS(certificate, key)
 	if err != nil {
 		log.Fatal("Failed to launch http server")
 	}
