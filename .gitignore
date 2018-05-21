@@ -1,0 +1,11 @@
+# Project files
+*.pdf
+*.log
+*.pem
+*.key
+*.cert
+*.exe
+
+# Ignore web root
+com/*
+!com/.gitkeep
