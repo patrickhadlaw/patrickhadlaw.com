@@ -55,7 +55,6 @@ export class ColorBarComponent implements OnInit {
     }
 
     update() {
-        //this.context.clearRect(0, 0, window.innerWidth, this.boxHeight);
         if (this.animationData !== undefined) {
             for (let i = 0; i < this.animationRows * this.animationElements; i++) {
                 this.animationData[i][0] += this.animationData[i][2];
