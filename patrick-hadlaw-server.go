@@ -7,13 +7,17 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 	"net/http"
 	"net/smtp"
+	"crypto/tls"
+	"context"
 	"os"
 	"strconv"
 	"syscall"
 
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 type LoggingResponseWriter struct {
@@ -160,9 +164,29 @@ func main() {
 		}
 	})
 
+	var manager *autocert.Manager
+
+	hostPolicy := func(ctx context.Context, host string) error {
+		allowedHost := "patrickhadlaw.com"
+		if host == allowedHost {
+			return nil
+		}
+		return fmt.Errorf("acme/autocert: only %s host is allowed", allowedHost)
+	}
+
+	manager = &autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: hostPolicy,
+		Cache:      autocert.DirCache("."),
+	}
+
 	server := http.Server{
+		ReadTimeout:  5 * time.Second,
+        WriteTimeout: 5 * time.Second,
+        IdleTimeout:  120 * time.Second,
 		Addr:    ":" + strconv.Itoa(port),
 		Handler: loggingMux(serveMux),
+		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
 	}
 
 	log.Println("serving patrickhadlaw.com on port:", port)

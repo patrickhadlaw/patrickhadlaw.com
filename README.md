@@ -26,6 +26,7 @@ $ ng build --prod
 $ cp -r dist/* ../com/
 $ cd ..
 $ go get golang.org/x/crypto/ssh/terminal
+$ go get golang.org/x/crypto/acme/autocert
 $ go build patrick-hadlaw-server.go
 ```
 
