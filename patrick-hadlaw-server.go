@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/smtp"
 	"crypto/tls"
-	"context"
 	"os"
 	"strconv"
 	"syscall"
