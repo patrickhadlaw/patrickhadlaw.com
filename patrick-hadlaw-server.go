@@ -162,17 +162,9 @@ func main() {
 
 	var manager *autocert.Manager
 
-	hostPolicy := func(ctx context.Context, host string) error {
-		allowedHost := "patrickhadlaw.com"
-		if host == allowedHost {
-			return nil
-		}
-		return fmt.Errorf("acme/autocert: only %s host is allowed", allowedHost)
-	}
-
 	manager = &autocert.Manager{
 		Prompt:     autocert.AcceptTOS,
-		HostPolicy: hostPolicy,
+		HostPolicy: autocert.HostWhitelist("patrickhadlaw.com"),
 		Cache:      autocert.DirCache("."),
 	}
 
