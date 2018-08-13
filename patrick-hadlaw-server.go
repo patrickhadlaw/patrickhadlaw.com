@@ -176,10 +176,21 @@ func main() {
 		Cache:      autocert.DirCache("."),
 	}
 
-	server := http.Server{
-		ReadTimeout:  5 * time.Second,
+	autocertServer := http.Server{
+        ReadTimeout:  5 * time.Second,
         WriteTimeout: 5 * time.Second,
         IdleTimeout:  120 * time.Second,
+        Handler:      manager.HTTPHandler(nil),
+    }
+
+	go func() {
+		err = autocertServer.ListenAndServe()
+		if err != nil {
+			log.Fatal("Failed to launch autocert http server")
+		}
+	}()
+
+	server := http.Server{
 		Addr:    ":" + strconv.Itoa(port),
 		Handler: loggingMux(serveMux),
 		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
@@ -188,6 +199,6 @@ func main() {
 	log.Println("serving patrickhadlaw.com on port:", port)
 	err = server.ListenAndServeTLS("", "")
 	if err != nil {
-		log.Fatal("Failed to launch http server")
+		log.Fatal("Failed to launch https server")
 	}
 }
