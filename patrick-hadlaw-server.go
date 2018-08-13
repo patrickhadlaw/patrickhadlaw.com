@@ -86,10 +86,6 @@ func main() {
 	flag.StringVar(&logfile, "log", "runtime.log", "name of log file")
 	var port int
 	flag.IntVar(&port, "port", 443, "port to run server on")
-	var key string
-	flag.StringVar(&key, "key", "key.pem", "ssl key")
-	var certificate string
-	flag.StringVar(&certificate, "certificate", "certificate.pem", "ssl certificate file")
 	var smtpPort int
 	flag.IntVar(&smtpPort, "smtp-port", 587, "port for smtp requests")
 
@@ -190,7 +186,7 @@ func main() {
 	}
 
 	log.Println("serving patrickhadlaw.com on port:", port)
-	err = server.ListenAndServeTLS(certificate, key)
+	err = server.ListenAndServeTLS("", "")
 	if err != nil {
 		log.Fatal("Failed to launch http server")
 	}
