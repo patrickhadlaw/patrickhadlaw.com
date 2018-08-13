@@ -7,13 +7,16 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 	"net/http"
 	"net/smtp"
+	"crypto/tls"
 	"os"
 	"strconv"
 	"syscall"
 
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 type LoggingResponseWriter struct {
@@ -82,10 +85,6 @@ func main() {
 	flag.StringVar(&logfile, "log", "runtime.log", "name of log file")
 	var port int
 	flag.IntVar(&port, "port", 443, "port to run server on")
-	var key string
-	flag.StringVar(&key, "key", "key.pem", "ssl key")
-	var certificate string
-	flag.StringVar(&certificate, "certificate", "certificate.pem", "ssl certificate file")
 	var smtpPort int
 	flag.IntVar(&smtpPort, "smtp-port", 587, "port for smtp requests")
 
@@ -160,14 +159,37 @@ func main() {
 		}
 	})
 
+	var manager *autocert.Manager
+
+	manager = &autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist("patrickhadlaw.com"),
+		Cache:      autocert.DirCache("."),
+	}
+
+	autocertServer := http.Server{
+        ReadTimeout:  5 * time.Second,
+        WriteTimeout: 5 * time.Second,
+        IdleTimeout:  120 * time.Second,
+        Handler:      manager.HTTPHandler(nil),
+    }
+
+	go func() {
+		err = autocertServer.ListenAndServe()
+		if err != nil {
+			log.Fatal("Failed to launch autocert http server")
+		}
+	}()
+
 	server := http.Server{
 		Addr:    ":" + strconv.Itoa(port),
 		Handler: loggingMux(serveMux),
+		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
 	}
 
 	log.Println("serving patrickhadlaw.com on port:", port)
-	err = server.ListenAndServeTLS(certificate, key)
+	err = server.ListenAndServeTLS("", "")
 	if err != nil {
-		log.Fatal("Failed to launch http server")
+		log.Fatal("Failed to launch https server")
 	}
 }
