@@ -2,21 +2,21 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
-	"time"
 	"net/http"
 	"net/smtp"
-	"crypto/tls"
 	"os"
 	"strconv"
 	"syscall"
+	"time"
 
-	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 type LoggingResponseWriter struct {
@@ -81,6 +81,8 @@ func main() {
 	flag.StringVar(&smtpHost, "mail", "patrickhadlaw.com", "mail host address")
 	var smtpServer string
 	flag.StringVar(&smtpServer, "smtp", "patrickhadlaw.com", "smtp server address")
+	var contactEmail string
+	flag.StringVar(&contactEmail, "contact", "patrickhadlaw@gmail.com", "smtp server address")
 	var logfile string
 	flag.StringVar(&logfile, "log", "runtime.log", "name of log file")
 	var port int
@@ -100,11 +102,11 @@ func main() {
 	log.SetOutput(multiWriter)
 
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Contact-email-account: ")
-	contactEmail, _ := reader.ReadString('\n')
-	contactEmail = contactEmail[0 : len(contactEmail)-2] // Remove newline
+	fmt.Print("Mail-server-user: ")
+	mailUser, _ := reader.ReadString('\n')
+	mailUser = mailUser[0 : len(mailUser)-2] // Remove newline
 
-	fmt.Print("Mail-server-password: ")
+	fmt.Print("\nMail-server-password: ")
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		log.Fatal("Invalid password")
@@ -128,7 +130,7 @@ func main() {
 				if name, ok := js["name"].(string); ok {
 					if email, ok := js["email"].(string); ok {
 						if message, ok := js["message"].(string); ok {
-							auth := smtp.PlainAuth("", "contact@"+smtpHost, password, smtpServer)
+							auth := smtp.PlainAuth("", mailUser, password, smtpServer)
 							msg := []byte("From: " + "contact@" + smtpHost + "\r\n" +
 								"To: " + contactEmail + "\r\n" +
 								"Subject: Contact message\r\n\r\n" +
@@ -137,7 +139,7 @@ func main() {
 								"Email: " + email + "\r\n" +
 								"\r\nMessage: " + message)
 
-							err = smtp.SendMail(smtpServer+":"+strconv.Itoa(smtpPort), auth, "contact@"+smtpHost, []string{contactEmail}, msg)
+							err = smtp.SendMail(smtpServer+":"+strconv.Itoa(smtpPort), auth, contactEmail, []string{contactEmail}, msg)
 							if err != nil {
 								log.Printf("ERROR: failed to send mail: %s", err.Error())
 								w.WriteHeader(http.StatusInternalServerError)
@@ -168,11 +170,11 @@ func main() {
 	}
 
 	autocertServer := http.Server{
-        ReadTimeout:  5 * time.Second,
-        WriteTimeout: 5 * time.Second,
-        IdleTimeout:  120 * time.Second,
-        Handler:      manager.HTTPHandler(nil),
-    }
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler:      manager.HTTPHandler(nil),
+	}
 
 	go func() {
 		err = autocertServer.ListenAndServe()
@@ -182,8 +184,8 @@ func main() {
 	}()
 
 	server := http.Server{
-		Addr:    ":" + strconv.Itoa(port),
-		Handler: loggingMux(serveMux),
+		Addr:      ":" + strconv.Itoa(port),
+		Handler:   loggingMux(serveMux),
 		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
 	}
 
