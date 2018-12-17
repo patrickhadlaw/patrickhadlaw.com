@@ -3,26 +3,36 @@ import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material';
 import { HttpModule } from '@angular/http';
 
-import { Router } from './app.routing';
+import { Router, EmptyComponent } from './app.routing';
 
-import { AppComponent } from './app.component';
-import { ColorBarComponent } from './color-bar.component';
+import { AppComponent } from './components/app.component';
+import { ColorBarComponent } from './components/color-bar.component';
 
-import { HomeComponent } from './home.component';
-import { HeroComponent } from './hero.component';
-import { BannerComponent } from './banner.component';
-import { ImageButtonComponent } from './image-button.component';
+import { NodeNavigationComponent } from './components/node-navigation.component';
+import { AboutMeComponent } from './components/about-me.component';
+import { HeroComponent } from './components/hero.component';
+import { BannerComponent } from './components/banner.component';
+import { ImageButtonComponent } from './components/image-button.component';
+
+import { VectorAlignCenterDirective } from './directive/align.directive';
+
+import { AppLoadModule } from './app-load.module';
 
 @NgModule({
   declarations: [
     AppComponent,
+    EmptyComponent,
     ColorBarComponent,
-    HomeComponent,
+    AboutMeComponent,
     HeroComponent,
     BannerComponent,
-    ImageButtonComponent
+    ImageButtonComponent,
+    NodeNavigationComponent,
+
+    VectorAlignCenterDirective
   ],
   imports: [
+    AppLoadModule,
     MatButtonModule,
     HttpModule,
     BrowserModule,

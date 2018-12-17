@@ -1,0 +1,58 @@
+<div class="container">
+    <svg #root id="root">
+        <mask id="clip">
+            <rect x="0" y="0" width="100%" height="100%" fill="white"></rect>
+            <circle r="50" cx="50" cy="50" fill="black"></circle>
+        </mask>
+        <filter id="blur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+        </filter>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:rgb(0, 153, 230);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgb(92, 0, 230);stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="node-fill-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgb(242, 230, 255);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgb(204, 238, 255);stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="node-stroke-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:rgb(92, 0, 230);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgb(0, 153, 230);stop-opacity:1" />
+        </linearGradient>  
+
+        <rect x="0" y="0" width="100%" height="100%" fill="white" fill-opacity="0.5"></rect>
+    
+        <g #all mask="url(#clip)">
+            <rect  x="0" y="0" width="100%" height="100%" fill="url(#gradient)"></rect>
+            <g #background filter="url(#blur)">
+                <line *ngFor="let line of backgroundLines"
+                    [attr.x1]="line.view1.position.x"
+                    [attr.x2]="line.view2.position.x"
+                    [attr.y1]="line.view1.position.y"
+                    [attr.y2]="line.view2.position.y"
+                    [attr.stroke]="'#ffffff'">
+                </line>
+                <circle *ngFor="let view of backgroundViews"
+                    [attr.cx]="view.position.x"
+                    [attr.cy]="view.position.y"
+                    [attr.r]="view.radius"
+                    [attr.fill]="'#ffffff'">
+                </circle>
+            </g>
+            <g #nodes>
+                <g *ngFor="let view of nodeViews">
+                    <circle
+                        class="node"
+                        [attr.cx]="view.position.x"
+                        [attr.cy]="view.position.y"
+                        [attr.r]="view.radius"
+                        [attr.stroke-width]="view.radius / 10"
+                        [attr.fill]="'url(#node-fill-gradient)'"
+                        [attr.stroke]="'url(#node-stroke-gradient)'">
+                    </circle>
+                    <text appVectorAlignCenter [attr.x]="view.position.x" [attr.y]="view.position.y" [style.fontSize.px]="view.radius / 2" [style.color]="'#808080'">{{view.title}}</text>
+                </g>
+            </g>
+        </g>
+    </svg>
+</div>
