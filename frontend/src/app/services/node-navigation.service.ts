@@ -30,6 +30,10 @@ export class NavigationNode {
         return node;
     }
 
+    public isRouted(): boolean {
+        return this.route != null;
+    }
+
     private _initialize() {
         for (let i = 0; i < this.children.length; i++) {
             this.children[i].parent = this;

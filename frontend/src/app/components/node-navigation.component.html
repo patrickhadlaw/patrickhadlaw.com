@@ -1,42 +1,34 @@
-<div class="container">
-    <svg #root id="root">
-        <mask id="clip">
-            <rect x="0" y="0" width="100%" height="100%" fill="white"></rect>
-            <circle r="50" cx="50" cy="50" fill="black"></circle>
-        </mask>
-        <filter id="blur">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
-        </filter>
-        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:rgb(0, 153, 230);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgb(92, 0, 230);stop-opacity:1" />
-        </linearGradient>
-        <linearGradient id="node-fill-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:rgb(242, 230, 255);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgb(204, 238, 255);stop-opacity:1" />
-        </linearGradient>
-        <linearGradient id="node-stroke-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:rgb(92, 0, 230);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgb(0, 153, 230);stop-opacity:1" />
-        </linearGradient>  
-
-        <rect x="0" y="0" width="100%" height="100%" fill="white" fill-opacity="0.5"></rect>
+<div class="container" [style.width]="active ? '100%' : '55px'" [style.height]="active ? '100%' : '55px'">
+    <svg class="close" width="50" height="50">
+        <circle (click)="retractPage()" class="close-circle" cx="25" cy="25" r="20" fill="white" stroke="black" stroke-width="1"></circle>
+        <rect class="close-icon" [attr.x]="15" [attr.y]="15" width="20" height="20" fill="url(#gradient)"></rect>
+    </svg>
+    <svg #root class="root" [attr.width]="width" [attr.height]="height" *ngIf="active">
+        <defs>
+            <mask id="clip">
+                <rect x="0" y="0" width="100%" height="100%" fill="white"></rect>
+                <circle [attr.r]="maskRadius" [attr.cx]="maskPosition.x" [attr.cy]="maskPosition.y" fill="black"></circle>
+            </mask>
+        </defs>
+        <rect x="0" y="0" width="100%" height="100%" fill="white" [attr.opacity]="maskOpacity"></rect>
     
-        <g #all mask="url(#clip)">
+        <g #all class="all" mask="url(#clip)">
             <rect  x="0" y="0" width="100%" height="100%" fill="url(#gradient)"></rect>
-            <g #background filter="url(#blur)">
+            <g #background>
                 <line *ngFor="let line of backgroundLines"
                     [attr.x1]="line.view1.position.x"
                     [attr.x2]="line.view2.position.x"
                     [attr.y1]="line.view1.position.y"
                     [attr.y2]="line.view2.position.y"
-                    [attr.stroke]="'#ffffff'">
+                    [attr.stroke]="'#ffffff'"
+                    opacity="0.25">
                 </line>
                 <circle *ngFor="let view of backgroundViews"
-                    [attr.cx]="view.position.x"
-                    [attr.cy]="view.position.y"
+                    [attr.cx]="'0'"
+                    [attr.cy]="'0'"
+                    [attr.transform]="'translate(' + view.position.x + ' ' + view.position.y + ')'"
                     [attr.r]="view.radius"
-                    [attr.fill]="'#ffffff'">
+                    [attr.fill]="'#ffffff'" opacity="0.05">
                 </circle>
             </g>
             <g #nodes>
@@ -47,12 +39,36 @@
                         [attr.cy]="view.position.y"
                         [attr.r]="view.radius"
                         [attr.stroke-width]="view.radius / 10"
-                        [attr.fill]="'url(#node-fill-gradient)'"
-                        [attr.stroke]="'url(#node-stroke-gradient)'">
+                        [attr.fill]="'white'"
+                        [attr.stroke]="'url(#node-gradient)'"
+                        (click)="clickNode(view)">
                     </circle>
-                    <text appVectorAlignCenter [attr.x]="view.position.x" [attr.y]="view.position.y" [style.fontSize.px]="view.radius / 2" [style.color]="'#808080'">{{view.title}}</text>
+                    <text class="node text" [attr.x]="view.position.x" [attr.y]="view.position.y" [style.fontSize.px]="view.radius / 2" fill="gray">{{view.title}}</text>
                 </g>
             </g>
         </g>
+    </svg>
+    <svg #defs width="100%" height="100%" [style.pointerEvents]="'none'">
+        <defs>
+            <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
+            </filter>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(0, 153, 230);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(92, 0, 230);stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="node-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(217, 217, 217);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(128, 128, 128);stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="node-stroke-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(255, 128, 0);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(255, 255, 0);stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="corner-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(217, 217, 217);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(255, 255, 255);stop-opacity:1" />
+            </linearGradient>
+        </defs>
     </svg>
 </div>

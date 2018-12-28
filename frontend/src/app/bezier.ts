@@ -79,6 +79,28 @@ export class BezierCurve {
     }
 
     public generateLookupTable(step: number): Vector[] { // TODO: implement lookup table generator
-        return [];
+        let result = [];
+        for (let i = 0; i < 1.0; i += step) {
+            result.push(this.evaluate(i));
+        }
+        return result;
+    }
+
+    public getSVGQuadraticPath(): string {
+        if (this._dimension !== 2) {
+            throw "cannot create path of one dimensional Bezier Curve";
+        } else {
+            const n = this._controls[0].length;
+            const step = 1 / n;
+            let result = 'M ' + String(this._controls[0][0]) + ' ' + String(this._controls[1][0]);
+            let vec = this.evaluate(step*1.5);
+            result += ' Q ' + String(this._controls[0][1]) + ' ' + String(this._controls[1][1]) + ', '
+                + String(vec.x) + ' ' + String(vec.y);
+            for (let i = step*2.5; i <= 1; i += step) {
+                vec = this.evaluate(i);
+                result += ' T ' + String(vec.x) + ' ' + String(vec.y);
+            }
+            return result;
+        }
     }
 }

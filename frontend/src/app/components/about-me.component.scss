@@ -13,7 +13,7 @@
     width: 100%;
     padding-top: 1cm;
     padding-bottom: 1cm; 
-    background-color: black;
+    background-image: linear-gradient(to bottom right, blue, purple);
 }
 .logo {
     flex: 1 1 auto;
@@ -96,7 +96,7 @@ a > .header-button {
     width: 75px;
     height: 75px;
     &:hover {
-        filter: invert(70%);
+        filter: invert(50%);
         cursor: pointer;
     }
     &:active {

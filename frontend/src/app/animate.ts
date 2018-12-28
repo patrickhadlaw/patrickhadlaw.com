@@ -46,6 +46,7 @@ export class LinearInterpolator extends Interpolator {
         }
         let value = this.scale(this._current / this._time);
         this._update(value);
+        this._current += this._tick;
     }
 }
 
@@ -81,6 +82,7 @@ export class ContinuousBezierInterpolator extends Interpolator {
     protected _loop: (point: Vector, t: number) => void;
     protected _interval: number;
     protected _current: number = 0;
+    protected _lookupTable: Vector[];
 
     get curve(): BezierCurve {
         return this._curve;
@@ -98,6 +100,7 @@ export class ContinuousBezierInterpolator extends Interpolator {
         this._time = time;
         this._curve = curve;
         this._update = update;
+        this._lookupTable = this._curve.generateLookupTable(this._tick/this._time);
     }
 
     public start() {
@@ -109,7 +112,7 @@ export class ContinuousBezierInterpolator extends Interpolator {
 
     public interpolate() {
         let t = (this._current % this._time) / this._time;
-        this._update(this._curve.evaluate(t), t);
+        this._update(this._lookupTable[Math.floor(t * (this._lookupTable.length - 1))], t);
         this._current += this._tick;
     }
 }

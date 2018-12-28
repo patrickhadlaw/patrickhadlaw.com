@@ -22,6 +22,11 @@ export const navigation = {
                     name: 'cpp-opengl',
                     route: '/external',
                     extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-opengl' }
+                },
+                {
+                    name: 'patrickhadlaw.com',
+                    route: '/external',
+                    extras: { externalUrl: 'https://github.com/patrickhadlaw/patrickhadlaw.com' }
                 }
             ]
         }

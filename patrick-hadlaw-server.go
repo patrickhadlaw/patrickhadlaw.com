@@ -2,21 +2,21 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
-	"time"
 	"net/http"
 	"net/smtp"
-	"crypto/tls"
 	"os"
 	"strconv"
 	"syscall"
+	"time"
 
-	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 type LoggingResponseWriter struct {
@@ -168,11 +168,11 @@ func main() {
 	}
 
 	autocertServer := http.Server{
-        ReadTimeout:  5 * time.Second,
-        WriteTimeout: 5 * time.Second,
-        IdleTimeout:  120 * time.Second,
-        Handler:      manager.HTTPHandler(nil),
-    }
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler:      manager.HTTPHandler(nil),
+	}
 
 	go func() {
 		err = autocertServer.ListenAndServe()
@@ -182,10 +182,12 @@ func main() {
 	}()
 
 	server := http.Server{
-		Addr:    ":" + strconv.Itoa(port),
-		Handler: loggingMux(serveMux),
+		Addr:      ":" + strconv.Itoa(port),
+		Handler:   loggingMux(serveMux),
 		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
 	}
+
+	manager.Cache
 
 	log.Println("serving patrickhadlaw.com on port:", port)
 	err = server.ListenAndServeTLS("", "")
