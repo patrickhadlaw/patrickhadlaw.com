@@ -57,7 +57,7 @@
     font-size: 0.3175cm;
     text-decoration: none;
     &:hover {
-        color: black;
+        color: purple;
         background-color: white;
         cursor: pointer;
     }
@@ -108,7 +108,7 @@ a > .header-button {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: black;
+    background-image: linear-gradient(to bottom right, blue, purple);
     padding-top: 0.5cm;
     padding-bottom: 1cm;
     color: white;

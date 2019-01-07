@@ -5,13 +5,15 @@ import { NavigationExtras } from "@angular/router";
 export class NavigationNode {
     public parent: NavigationNode = null;
     public name: string;
+    public description: string;
     public route: string;
     public extras: NavigationExtras = {};
     public children: NavigationNode[] = [];
 
     constructor(name: string = "undefined", route: string = undefined) {
-        this.name = name
+        this.name = name;
         this.route = route;
+        this.description = '';
     }
 
     public static fromJSON(json: any): NavigationNode {
@@ -45,6 +47,9 @@ export class NavigationNode {
 export class NodeNavigationService {
     private static _root: NavigationNode;
     private static _current: NavigationNode;
+    public set current(node: NavigationNode) {
+        NodeNavigationService._current = node;
+    }
     private static _initialized: boolean = false;
 
     constructor() {
@@ -72,8 +77,10 @@ export class NodeNavigationService {
     public navigateUpstream() {
         NodeNavigationService._current = NodeNavigationService._current.parent;
     }
-
-    public observe(): Observable<NavigationNode> {
+    public observeRoot(): Observable<NavigationNode> {
+        return of(NodeNavigationService._root);
+    }
+    public observeCurrent(): Observable<NavigationNode> {
         return of(NodeNavigationService._current);
     }
 }

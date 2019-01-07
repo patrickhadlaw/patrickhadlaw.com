@@ -15,35 +15,40 @@
         <g #all class="all" mask="url(#clip)">
             <rect  x="0" y="0" width="100%" height="100%" fill="url(#gradient)"></rect>
             <g #background>
-                <line *ngFor="let line of backgroundLines"
-                    [attr.x1]="line.view1.position.x"
-                    [attr.x2]="line.view2.position.x"
-                    [attr.y1]="line.view1.position.y"
-                    [attr.y2]="line.view2.position.y"
-                    [attr.stroke]="'#ffffff'"
-                    opacity="0.25">
-                </line>
                 <circle *ngFor="let view of backgroundViews"
                     [attr.cx]="'0'"
                     [attr.cy]="'0'"
-                    [attr.transform]="'translate(' + view.position.x + ' ' + view.position.y + ')'"
+                    [attr.transform]="'translate(' + view.resolved.x + ' ' + view.resolved.y + ')'"
                     [attr.r]="view.radius"
                     [attr.fill]="'#ffffff'" opacity="0.05">
                 </circle>
+                <line *ngFor="let line of nodeLines"
+                    [attr.x1]="line.view1.resolved.x"
+                    [attr.x2]="line.view2.resolved.x"
+                    [attr.y1]="line.view1.resolved.y"
+                    [attr.y2]="line.view2.resolved.y"
+                    [attr.stroke]="'#ffffff'"
+                    opacity="0.25">
+                </line>
             </g>
             <g #nodes>
                 <g *ngFor="let view of nodeViews">
                     <circle
                         class="node"
-                        [attr.cx]="view.position.x"
-                        [attr.cy]="view.position.y"
+                        [attr.cx]="view.resolved.x"
+                        [attr.cy]="view.resolved.y"
                         [attr.r]="view.radius"
                         [attr.stroke-width]="view.radius / 10"
                         [attr.fill]="'white'"
                         [attr.stroke]="'url(#node-gradient)'"
                         (click)="clickNode(view)">
                     </circle>
-                    <text class="node text" [attr.x]="view.position.x" [attr.y]="view.position.y" [style.fontSize.px]="view.radius / 2" fill="gray">{{view.title}}</text>
+                    <text class="node text" alignTextFitWidth="{{view.baseRadius*2*0.8}}" [attr.x]="view.resolved.x" [attr.y]="view.resolved.y - view.expanded * (view.radius / 4)" [style.fontSize.px]="view.baseRadius / 2" fill="gray">{{view.title}}</text>
+                    <foreignObject [attr.x]="view.resolved.x - view.radius * 0.8" [attr.y]="view.resolved.y + view.radius / 10" [attr.width]="round(view.radius*2*0.8) + 1" [attr.height]="view.radius">
+                        <xhtml:div xmlns="http://www.w3.org/1999/xhtml" class="node description" [style.opacity]="view.expanded" [style.fontSize.px]="view.radius / 8">
+                            {{view.description}}
+                        </xhtml:div>
+                    </foreignObject>
                 </g>
             </g>
         </g>

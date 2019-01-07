@@ -22,9 +22,19 @@
 }
 .node {
     &:hover {
-        cursor: pointer;
+        cursor: crosshair;
     }
     &.text {
         text-anchor: middle;
+        pointer-events: none;
+        transform-origin: center;
+        transform-box: fill-box;
+        &:hover {
+            cursor: crosshair;
+        }
+    }
+    &.description {
+        color: gray;
+        text-align: center;
     }
 }

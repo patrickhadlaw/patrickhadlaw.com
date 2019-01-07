@@ -5,26 +5,32 @@ import { NodeNavigationService, NavigationNode } from './services/node-navigatio
 
 export const navigation = {
     name: 'Me',
+    description: 'Click here to learn more about me or to contact me!',
     route: '/about-me',
     children: [
         {
             name: 'Experience',
+            description: 'Click here to learn more about my work experience',
             route: '/experience'
         },
         {
             name: 'Skills',
+            description: 'Click here to learn more about my various skills',
             route: '/skills'
         },
         {
             name: 'Projects',
+            description: 'Click here to see some of my side projects on Github',
             children: [
                 {
                     name: 'cpp-opengl',
+                    description: 'A real-time GUI and 3D renderer',
                     route: '/external',
                     extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-opengl' }
                 },
                 {
                     name: 'patrickhadlaw.com',
+                    description: 'This website',
                     route: '/external',
                     extras: { externalUrl: 'https://github.com/patrickhadlaw/patrickhadlaw.com' }
                 }

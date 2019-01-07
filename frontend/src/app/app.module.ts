@@ -14,7 +14,7 @@ import { HeroComponent } from './components/hero.component';
 import { BannerComponent } from './components/banner.component';
 import { ImageButtonComponent } from './components/image-button.component';
 
-import { VectorAlignCenterDirective } from './directive/align.directive';
+import { VectorTextFitWidthDirective } from './directive/align.directive';
 
 import { AppLoadModule } from './app-load.module';
 
@@ -29,7 +29,7 @@ import { AppLoadModule } from './app-load.module';
     ImageButtonComponent,
     NodeNavigationComponent,
 
-    VectorAlignCenterDirective
+    VectorTextFitWidthDirective
   ],
   imports: [
     AppLoadModule,

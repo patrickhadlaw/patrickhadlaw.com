@@ -122,7 +122,12 @@ export class Vector {
     }
 
     unit() {
-        return this.divide(this.norm());
+        let norm = this.norm();
+        if (norm === 0.0) {
+            return new Vector(...(new Array(this.data.length).fill(0.0)));
+        } else {
+            return this.divide(norm);
+        }
     }
 }
 

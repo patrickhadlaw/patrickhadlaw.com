@@ -83,6 +83,7 @@ export class ContinuousBezierInterpolator extends Interpolator {
     protected _interval: number;
     protected _current: number = 0;
     protected _lookupTable: Vector[];
+    protected _hold: boolean = false;
 
     get curve(): BezierCurve {
         return this._curve;
@@ -110,10 +111,19 @@ export class ContinuousBezierInterpolator extends Interpolator {
         window.clearInterval(this._interval);
     }
 
+    public hold() {
+        this._hold = true;
+    }
+    public continue() {
+        this._hold = false;
+    }
+
     public interpolate() {
         let t = (this._current % this._time) / this._time;
         this._update(this._lookupTable[Math.floor(t * (this._lookupTable.length - 1))], t);
-        this._current += this._tick;
+        if (!this._hold) {
+            this._current += this._tick;
+        }
     }
 }
 
