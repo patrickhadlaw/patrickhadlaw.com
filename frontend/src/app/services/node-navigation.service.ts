@@ -36,6 +36,10 @@ export class NavigationNode {
         return this.route != null;
     }
 
+    public externalRoute(): boolean {
+        return this.route === '/external';
+    }
+
     private _initialize() {
         for (let i = 0; i < this.children.length; i++) {
             this.children[i].parent = this;

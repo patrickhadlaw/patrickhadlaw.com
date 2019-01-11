@@ -15,13 +15,13 @@
         <g #all class="all" mask="url(#clip)">
             <rect  x="0" y="0" width="100%" height="100%" fill="url(#gradient)"></rect>
             <g #background>
-                <circle *ngFor="let view of backgroundViews"
+                <!-- <circle *ngFor="let view of backgroundViews"
                     [attr.cx]="'0'"
                     [attr.cy]="'0'"
                     [attr.transform]="'translate(' + view.resolved.x + ' ' + view.resolved.y + ')'"
                     [attr.r]="view.radius"
                     [attr.fill]="'#ffffff'" opacity="0.05">
-                </circle>
+                </circle> -->
                 <line *ngFor="let line of nodeLines"
                     [attr.x1]="line.view1.resolved.x"
                     [attr.x2]="line.view2.resolved.x"
@@ -43,12 +43,15 @@
                         [attr.stroke]="'url(#node-gradient)'"
                         (click)="clickNode(view)">
                     </circle>
-                    <text class="node text" alignTextFitWidth="{{view.baseRadius*2*0.8}}" [attr.x]="view.resolved.x" [attr.y]="view.resolved.y - view.expanded * (view.radius / 4)" [style.fontSize.px]="view.baseRadius / 2" fill="gray">{{view.title}}</text>
-                    <foreignObject [attr.x]="view.resolved.x - view.radius * 0.8" [attr.y]="view.resolved.y + view.radius / 10" [attr.width]="round(view.radius*2*0.8) + 1" [attr.height]="view.radius">
-                        <xhtml:div xmlns="http://www.w3.org/1999/xhtml" class="node description" [style.opacity]="view.expanded" [style.fontSize.px]="view.radius / 8">
-                            {{view.description}}
-                        </xhtml:div>
-                    </foreignObject>
+                    <g [attr.opacity]="view.opacity">
+                        <text class="node text" alignTextFitWidth="{{view.baseRadius*2*0.8}}" [attr.x]="view.resolved.x" [attr.y]="view.resolved.y - view.expanded * (view.radius / 4)" [style.fontSize.px]="view.baseRadius / 2" fill="gray">{{view.title}}</text>
+                        <foreignObject *ngIf="!groupView(view)" [attr.x]="view.resolved.x - view.radius * 0.8" [attr.y]="view.resolved.y + view.radius / 10" [attr.width]="round(view.radius*2*0.8) + 1" [attr.height]="view.radius">
+                            <xhtml:div xmlns="http://www.w3.org/1999/xhtml" class="node description" [style.opacity]="view.expanded" [style.fontSize.px]="view.radius / 8">
+                                {{view.description}}
+                            </xhtml:div>
+                        </foreignObject>
+                        <image *ngIf="groupView(view)" xlink:href="../assets/back-arrow.svg" [attr.x]="view.resolved.x - view.radius / 4" [attr.y]="view.resolved.y + view.radius / 4" [attr.width]="view.radius / 2" [attr.height]="view.radius / 2" />
+                    </g>
                 </g>
             </g>
         </g>

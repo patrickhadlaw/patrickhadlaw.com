@@ -1,9 +1,8 @@
 import { Component, ViewChild, ElementRef, OnInit, Input, AfterViewInit } from '@angular/core';
-import { appRoutes } from '../app.routing';
 import { NodeNavigationService, NavigationNode } from '../services/node-navigation.service';
 import { Router } from '@angular/router';
 
-import { Interpolator, ContinuousBezierInterpolator, BezierInterpolator, ContinuousInterpolator, LinearInterpolator } from '../animate';
+import { Interpolator, ContinuousBezierInterpolator, LinearInterpolator } from '../animate';
 import { rotatePoint, Vector } from '../vector';
 import { BezierCurve } from '../bezier';
 
@@ -35,7 +34,7 @@ class NodeView {
     public interpolator: Interpolator;
     public opacity: number;
     public get group(): boolean {
-        return this.node.children.length > 0 && this.node.route == null;
+        return this.node.children.length > 0 && !this.node.isRouted();
     }
 }
 
@@ -206,8 +205,8 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         view.time = Math.floor(ANIMATION_TIME * (Math.random() + 1));
         view.node = node;
         let curve = this.randomCurveInRange(view.position,
-            new Vector(2*radius, 2*radius),
-            new Vector(this.width - 2*radius, this.height - 2*radius)
+            new Vector(radius, radius),
+            new Vector(this.width - radius, this.height - radius)
         );
         view.interpolator = new ContinuousBezierInterpolator(view.time, curve,
             (point: Vector, t: number) => {
@@ -297,17 +296,25 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         }
     }
 
-    public clickNode(view: NodeView) { // TODO: if current === view.node && view is a group => retract group
-        this.current = view.node;
-        if (this.current.isRouted()) {
-            this.expandPage(view);
-        } else {
-            this.expandGroup(view);
+    public clickNode(view: NodeView) {
+        if (this.active) {
+            if (view.node.externalRoute()) {
+                this.router.navigate([view.node.route, view.node.extras]);
+            } else if (view.node.isRouted()) {
+                this.current = view.node;
+                this.expandPage(view);
+            } else if (view.node === this.current) {
+                this.current = view.node.parent;
+                this.expandGroup(view, true);
+            } else {
+                this.current = view.node;
+                this.expandGroup(view);
+            }
         }
     }
 
     public expandPage(view: NodeView) {
-        this.router.navigateByUrl(this.current.route, this.current.extras);
+        this.router.navigate([this.current.route, this.current.extras]);
         this.maskPosition.x = view.resolved.x;
         this.maskPosition.y = view.resolved.y;
         this.maskRadius = 0;
@@ -315,7 +322,7 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         this.expander = new LinearInterpolator(500, (value: number) => {
             this.maskRadius = value * Math.max(this.width, this.height);
             this.maskOpacity = 1 - value;
-        }, () => { this.active = false;this.router.navigateByUrl(this.current.route, this.current.extras); });
+        }, () => { this.active = false; this.router.navigate([this.current.route, this.current.extras]); });
         this.expander.start();
     }
 
@@ -341,36 +348,48 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         this.expander.start();
     }
 
-    public expandGroup(view: NodeView) {
+    public expandGroup(view: NodeView, retract: boolean = false) {
         const numViews = this.nodeViews.length;
         let numComplete = 0;
-        let target = this.setupView(view.node, new Vector(this.width / 2, this.height / 2), this.height / 8);
+        let target = null;
+        if (retract) {
+            target = this.setupView(view.node.parent, new Vector(this.width / 2, this.height / 2), this.height / 8);
+        } else {
+            target = this.setupView(view.node, new Vector(this.width / 2, this.height / 2), this.height / 8);
+        }
         let finished = () => {
-            view.interpolator = target.interpolator;
+            view.baseRadius = target.baseRadius;
+            view.title = target.title;
+            view.description = target.description;
+            view.node = target.node;
+            view.opacity = 1.0;
+            view.radius = view.radius;
+            view.interpolator = new ContinuousBezierInterpolator(view.time, (target.interpolator as ContinuousBezierInterpolator).curve,
+                (point: Vector, t: number) => {
+                    view.position = point;
+                    this.adjustView(view);
+                }
+            );
             this.nodeLines = [];
-            let childViews = this.setupViewChildren(view);
+            let childViews = this.setupViewChildren(target);
             this.nodeViews = [...childViews, view];
             for (let child of childViews) {
-                let line = new NodeLine();
-                line.view1 = view;
-                line.view2 = child;
-                this.nodeLines.push(line);
-                child.pull = new Vector(this.width / 2, this.height / 2);
-                child.pull = child.pull.subtract(child.position);
+                if (child !== view) {
+                    let line = new NodeLine();
+                    line.view1 = view;
+                    line.view2 = child;
+                    this.nodeLines.push(line);
+                    child.pull = new Vector(this.width / 2, this.height / 2);
+                    child.pull = child.pull.subtract(child.position);
+                }
             }
-            this.expander = new LinearInterpolator(500, (value: number) => {
-                for (let child of this.nodeViews) {
-                    let dir = new Vector(this.width / 2, this.height / 2);
-                    dir = child.position.subtract(dir);
-                    child.pull = dir.multiply(-(1-value));
-                }
-            }, () => {
-                for (let child of this.nodeViews) {
-                    child.interpolator.start();
-                }
-            });
-            this.expander.start();
+            for (let child of this.nodeViews) {
+                child.opacity = 1.0;
+                child.interpolator.start();
+            }
+            this.precedent = view;
         };
+        let t = 0.0;
         for (let child of this.nodeViews) {
             let complete = () => {
                 numComplete++;
@@ -389,17 +408,19 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
             child.interpolator.stop();
             let initial = new Vector(...child.resolved.data);
             let radius = child.radius;
-            let dir = new Vector(this.width / 2 - child.resolved.x, this.height / 2 - child.resolved.y);
-            child.pull.x = 0;
-            child.pull.y = 0;
+            let dir = new Vector(view.resolved.x - child.resolved.x, view.resolved.y - child.resolved.y);
             child.interpolator = new LinearInterpolator(500, (value: number) => {
-                child.position = initial.add(dir.multiply(value));
+                
                 if (child === view) {
                     child.radius = radius + (this.width / 10 - radius) * (value);
-                } else if (child.node === this.current) {
-
                 } else {
+                    child.position = initial.add(dir.multiply(value));
+                    child.opacity = 1-value;
                     child.radius = radius * (1-value);
+                }
+                if (value > t && retract) {
+                    t = value;
+                    view.opacity = 1-t;
                 }
             }, complete);
             child.interpolator.start();
@@ -408,5 +429,9 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
 
     public round(n: number): number {
         return Math.round(n);
+    }
+
+    public groupView(view: NodeView): boolean {
+        return view.node === this.current && view.group;
     }
 }

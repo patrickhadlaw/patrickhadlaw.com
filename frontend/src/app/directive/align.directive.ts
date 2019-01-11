@@ -5,6 +5,8 @@ import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 })
 export class VectorTextFitWidthDirective implements OnChanges {
     @Input('alignTextFitWidth') width: number;
+    @Input('x') x: number;
+    @Input('y') y: number;
     element: ElementRef;
     constructor(element: ElementRef) {
         this.element = element;
@@ -16,14 +18,12 @@ export class VectorTextFitWidthDirective implements OnChanges {
     }
 
     public update() {
-        window.setTimeout(() => {
+        // window.setTimeout(() => {
             let bbox = this.element.nativeElement.getBBox();
             let scale = this.width / bbox.width;
-            let x = parseFloat(this.element.nativeElement.getAttribute('x'));
-            let y = parseFloat(this.element.nativeElement.getAttribute('y'));
-            if (scale < 1) {
-                this.element.nativeElement.style.transform = 'scale(' + scale + ')';
-            }
-        }, 0);
+            // if (scale < 1) {
+                this.element.nativeElement.style.transform = 'translate(' + (1-scale)*this.x + 'px, ' + (1-scale)*this.y + 'px) scale(' + scale + ')';
+            // }
+        // }, 0);
     }
 }

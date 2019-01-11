@@ -22,19 +22,28 @@
 }
 .node {
     &:hover {
-        cursor: crosshair;
+        cursor: normal;
     }
     &.text {
         text-anchor: middle;
         pointer-events: none;
-        transform-origin: center;
-        transform-box: fill-box;
         &:hover {
             cursor: crosshair;
         }
     }
     &.description {
+        pointer-events: none;
         color: gray;
         text-align: center;
     }
+}
+.message {
+    position: fixed;
+    display: flex;
+    width: 25vw;
+    height: 5vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 25px;
+    align-items: center;
+    justify-content: center;
 }

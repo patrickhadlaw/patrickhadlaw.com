@@ -1,31 +1,3 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-height: calc(100vh - 310px);
-}
-
-.header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding-top: 1cm;
-    padding-bottom: 1cm; 
-    background-image: linear-gradient(to bottom right, blue, purple);
-}
-.logo {
-    flex: 1 1 auto;
-    display: flex;
-    justify-content: center;
-    font-size: 1.905cm;
-    color: white;
-    margin-left: 1cm;
-    margin-right: 1cm;
-    margin-top: auto;
-    margin-bottom: auto;
-}
 .right-header-content {
     flex: 1 1 auto;
     display: flex;

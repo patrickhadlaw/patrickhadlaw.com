@@ -1,23 +1,23 @@
-import { ModuleWithProviders, Component } from '@angular/core'; 
+import { ModuleWithProviders, InjectionToken, Component } from '@angular/core'; 
 import { RouterModule, Routes } from '@angular/router';
 
 import { AboutMeComponent } from './components/about-me.component';
 import { AppComponent } from './components/app.component';
 import { NodeNavigationComponent } from './components/node-navigation.component';
 
-import { externalUrlProvider } from './app-load.module';
+import { ExperienceComponent } from './components/experience.component';
 
 @Component({
     template: ''
 })
 export class EmptyComponent {}
 
+export const externalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
+
 export const appRoutes: Routes = [
     {
         path: 'external',
-        resolve: {
-            url: externalUrlProvider,
-        },
+        canActivate: [externalUrlProvider],
         component: EmptyComponent
     },
     {
@@ -28,6 +28,11 @@ export const appRoutes: Routes = [
     {
         path: 'about-me',
         component: AboutMeComponent,
+        pathMatch: 'full'
+    },
+    {
+        path: 'experience',
+        component: ExperienceComponent,
         pathMatch: 'full'
     },
     {
