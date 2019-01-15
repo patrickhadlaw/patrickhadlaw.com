@@ -15,11 +15,11 @@ enum SendState {
 }
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss']
+    selector: 'app-about-me',
+    templateUrl: './about-me.component.html',
+    styleUrls: ['./about-me.component.scss']
 })
-export class HomeComponent {
+export class AboutMeComponent {
     @ViewChild('messageName') messageName: ElementRef;
     @ViewChild('messageEmail') messageEmail: ElementRef;
     @ViewChild('messageContent') messageContent: ElementRef;

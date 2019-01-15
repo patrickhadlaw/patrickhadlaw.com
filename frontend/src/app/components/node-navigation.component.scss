@@ -1,0 +1,71 @@
+.close {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+}
+.close-icon {
+    pointer-events: none;
+}
+.close-circle:hover {
+    cursor: pointer;
+}
+.container {
+    position: fixed;
+    display: flex;
+    z-index: 999;
+}
+.root {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+.node {
+    &:hover {
+        cursor: normal;
+    }
+    &.text {
+        text-anchor: middle;
+        pointer-events: none;
+        &:hover {
+            cursor: crosshair;
+        }
+    }
+    &.description {
+        pointer-events: none;
+        color: gray;
+        text-align: center;
+    }
+}
+.message-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+.message {
+    margin-top: 20px;
+    width: 50vw;
+    z-index: 2;
+    max-width: 500px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 14px;
+    border-radius: 20px;
+    text-align: center;
+    &:hover {
+        filter: blur(10px);
+    }
+}
+.canvas {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}

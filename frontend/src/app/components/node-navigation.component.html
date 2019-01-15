@@ -1,0 +1,22 @@
+<div #container class="container" [style.width]="active ? '100%' : '55px'" [style.height]="active ? '100%' : '55px'">
+    <svg class="close" width="50" height="50">
+        <circle (click)="retractPage()" class="close-circle" cx="25" cy="25" r="20" fill="white" stroke="black"
+            stroke-width="1"></circle>
+        <path class="close-icon" d="M 150 450 L 200 500 L 350 350 L 500 500 L 550 450 L 400 300 L 550 150 L 500 100 L 350 250 L 200 100 L 150 150 L 300 300 L 150 450"
+            transform="translate(8, 10) scale(0.05)" fill="url(#gradient)"></path>
+    </svg>
+    <canvas #canvas class="canvas" [attr.width]="width" [attr.height]="height"></canvas>
+    <svg #defs width="100%" height="100%" [style.pointerEvents]="'none'">
+        <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(0, 153, 230);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(92, 0, 230);stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+    <div class="message-container" *ngIf="maskRadius === 0 && active">
+        <div class="message">
+            Welcome to patrickhadlaw.com! To navigate through the website simply click on the floating bubbles.
+        </div>
+    </div>
+</div>

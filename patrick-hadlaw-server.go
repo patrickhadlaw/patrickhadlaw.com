@@ -189,6 +189,8 @@ func main() {
 		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
 	}
 
+	manager.Cache
+
 	log.Println("serving patrickhadlaw.com on port:", port)
 	err = server.ListenAndServeTLS("", "")
 	if err != nil {

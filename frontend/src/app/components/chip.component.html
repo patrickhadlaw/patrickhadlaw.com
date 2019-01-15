@@ -1,0 +1,10 @@
+<div (click)="onClick($event)" [attr.class]="(clickable && mini ? 'clickable ' : '') + 'chip' + postfix" [style.cursor]="clickable ? 'pointer' : 'default'">
+    <img *ngIf="src.length > 0 && size != 'mini' && width > 500" [attr.width]="imageSize" [attr.height]="imageSize" [attr.class]="'image' + postfix" [attr.src]="src"/>
+    <div *ngIf="mini" [attr.class]="'header mini'">{{header}}</div>
+    <div *ngIf="!mini" [attr.class]="'container' + postfix">
+        <div [attr.class]="'header' + postfix">{{header}}</div>
+        <div [attr.class]="'content' + postfix">
+            <ng-content *ngIf="large"></ng-content>
+        </div>
+    </div>
+</div>
