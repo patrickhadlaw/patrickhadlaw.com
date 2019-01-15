@@ -28,7 +28,6 @@ export class NavigationNode {
         }
 
         node._initialize();
-        console.log(node);
         return node;
     }
 

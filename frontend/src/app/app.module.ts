@@ -16,8 +16,10 @@ import { HeroComponent } from './components/hero.component';
 import { BannerComponent } from './components/banner.component';
 import { ImageButtonComponent } from './components/image-button.component';
 import { ExperienceComponent } from './components/experience.component';
+import { SkillsComponent } from './components/skills.component';
+import { ChipComponent } from './components/chip.component';
 
-import { VectorTextFitWidthDirective } from './directive/align.directive';
+import { ScrollXDirective } from './directive/scroll.directive';
 
 import { externalUrlProvider, Router } from './app.routing';
 
@@ -35,7 +37,7 @@ export const navigation = {
         },
         {
             name: 'Skills',
-            description: 'Click here to learn more about my various skills',
+            description: 'Click here to learn more about my skills',
             route: '/skills'
         },
         {
@@ -47,6 +49,24 @@ export const navigation = {
                     description: 'A real-time GUI and 3D renderer',
                     route: '/external',
                     extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-opengl' }
+                },
+                {
+                    name: 'cpp-vulkan',
+                    description: 'A Vulkan API project',
+                    route: '/external',
+                    extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-vulkan' }
+                },
+                {
+                    name: 'The-Brachistochrone-Curve',
+                    description: 'A web app/game relating to the brachistochrone curve',
+                    route: '/external',
+                    extras: { externalUrl: 'https://github.com/patrickhadlaw/The-Brachistochrone-Curve' }
+                },
+                {
+                    name: 'py-mod-sort',
+                    description: 'Sorting algorithm visualization',
+                    route: '/external',
+                    extras: { externalUrl: 'https://github.com/patrickhadlaw/py-mod-sort' }
                 },
                 {
                     name: 'patrickhadlaw.com',
@@ -69,15 +89,17 @@ export function appInit(service: NodeNavigationService) {
     declarations: [
         AppComponent,
         EmptyComponent,
+        ChipComponent,
         ColorBarComponent,
         AboutMeComponent,
         ExperienceComponent,
+        SkillsComponent,
         HeroComponent,
         BannerComponent,
         ImageButtonComponent,
         NodeNavigationComponent,
     
-        VectorTextFitWidthDirective
+        ScrollXDirective
       ],
     imports: [
         Router,

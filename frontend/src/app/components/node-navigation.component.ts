@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, OnInit, Input, AfterViewInit } from '
 import { NodeNavigationService, NavigationNode } from '../services/node-navigation.service';
 import { Router } from '@angular/router';
 
-import { Interpolator, ContinuousBezierInterpolator, LinearInterpolator } from '../animate';
+import { Interpolator, ContinuousBezierInterpolator, LinearInterpolator, ContinuousInterpolator } from '../animate';
 import { rotatePoint, Vector } from '../vector';
 import { BezierCurve } from '../bezier';
 
@@ -45,20 +45,37 @@ class NodeLine {
     public interpolator: Interpolator;
 }
 
+function rgba(r: number, g: number, b: number, a: number): string {
+    return 'rgba(' + String(r) + ',' + String(g) + ',' + String(b) + ',' + String(a) + ')';
+}
+
 @Component({
     selector: 'app-node-navigation',
     templateUrl: './node-navigation.component.html',
     styleUrls: ['./node-navigation.component.scss']
 })
 export class NodeNavigationComponent implements OnInit, AfterViewInit {
+    @ViewChild('container') container: ElementRef;
     svgElement: ElementRef;
     @ViewChild('root') set root(root: ElementRef) {
         this.svgElement = root;
     }
     @ViewChild('nodes') nodesElement: ElementRef;
-
+    private _canvas: ElementRef;
+    private _context: CanvasRenderingContext2D;
+    @ViewChild('canvas') set canvas(canvas: ElementRef) {
+        this._canvas = canvas;
+        this._context = canvas.nativeElement.getContext('2d');
+    }
+    get canvas(): ElementRef {
+        return this._canvas;
+    }
     @Input('bubble-fill') bubbleFill: string = '#ffffff';
     @Input('bubble-stroke') bubbleStroke: string = '#004466';
+
+    get context(): CanvasRenderingContext2D {
+        return this._context;
+    }
 
     private _current: NavigationNode;
     public set current(value: NavigationNode) {
@@ -77,7 +94,13 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
 
     mouse: Vector = new Vector(0, 0);
 
-    active: boolean = true;
+    private _active: boolean = true;
+    public set active(active: boolean) {
+        this._active = active;
+    }
+    public get active(): boolean {
+        return this._active;
+    }
 
     maskPosition: Vector = new Vector(0, 0);
     maskRadius: number = 0;
@@ -86,28 +109,130 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
     minDistance: number = -1;
     precedent: NodeView;
 
+    wrapCanvasText(text: string, size: number, width: number, position: Vector, centered: boolean = true, adjustSize: boolean = false) {
+        this.context.font = String(size) + 'px Roboto';
+        let words = text.split(' ');
+        let current = '';
+        let currentWidth = 0;
+        let maxWidth = 0;
+        let offset = 0;
+        let space = this.context.measureText(' ');
+        let lines = [];
+        let first = true;
+        for (let word of words) {
+            let metrics = this.context.measureText(word);
+            if (currentWidth + space.width + metrics.width <= width) {
+                current = first ? current + word : current + ' ' + word;
+                first = false;
+                currentWidth = first ? metrics.width : currentWidth + space.width + metrics.width;
+            } else if (adjustSize && lines.length === 0) {
+                this.wrapCanvasText(text, (width / (currentWidth + space.width + metrics.width)) * size - 1, width, position, centered, false);
+                break;
+            } else {
+                lines.push({
+                    text: current,
+                    width: currentWidth - space.width
+                });
+                maxWidth = Math.max(maxWidth, currentWidth);
+                currentWidth = metrics.width;
+                current = word;
+            }
+        }
+        lines.push({
+            text: current,
+            width: currentWidth - space.width
+        });
+        maxWidth = Math.max(maxWidth, currentWidth);
+        for (let line of lines) {
+            let p = new Vector(position.x, position.y + offset);
+            if (centered) {
+                p.x -= line.width / 2;
+            }
+            this.context.fillText(line.text, p.x, p.y, width);
+            offset += size;
+        }
+    }
+
     expander: Interpolator;
+    renderer: ContinuousInterpolator = new ContinuousInterpolator(() => {
+        this.context.restore();
+        this.context.clearRect(0, 0, this.width, this.height);
+        this.context.lineWidth = 1;
+        let gradient = this.context.createLinearGradient(0, 0, this.width, this.height);
+        gradient.addColorStop(0, 'rgb(0, 153, 230)');
+        gradient.addColorStop(1, 'rgb(92, 0, 230)');
+        this.context.fillStyle = gradient;
+        this.context.fillRect(0, 0, this.width, this.height);
+        this.context.strokeStyle = 'white';
+        for (let line of this.nodeLines) {
+            this.context.beginPath();
+            this.context.moveTo(line.view1.resolved.x, line.view1.resolved.y);
+            this.context.lineTo(line.view2.resolved.x, line.view2.resolved.y);
+            this.context.stroke();
+        }
+        for (let view of this.nodeViews) {
+            this.context.beginPath();
+            this.context.arc(view.resolved.x, view.resolved.y, view.radius, 0, 2 * Math.PI);
+            this.context.fillStyle = this.groupView(view) ? 'black' : 'white';
+            this.context.strokeStyle = this.groupView(view) ? 'white' : 'black';
+            this.context.lineWidth = view.radius / 50;
+            this.context.fill();
+            this.context.stroke();
+            this.context.fillStyle = this.groupView(view) ? rgba(255, 255, 255, view.opacity) : rgba(128, 128, 128, view.opacity);
+            let resolved = view.resolved;
+            this.wrapCanvasText(view.title, view.baseRadius / 2, 0.9 * 2 * view.radius, resolved, true, true);
+            let below = new Vector(resolved.x, resolved.y + view.radius / 4);
+            this.context.fillStyle = (this.groupView(view) ? 'rgba(255, 255, 255, ' : 'rgba(128, 128, 128, ') + String(view.expanded * view.opacity) + ')';
+            if (this.groupView(view)) {
+                let y = resolved.y + view.radius / 3;
+                let x = resolved.x;
+                this.context.strokeStyle = 'white';
+                this.context.fillStyle = 'white';
+                this.context.lineWidth = view.radius / 12;
+                let width = this.context.lineWidth * 6;
+                this.context.beginPath();
+                this.context.moveTo(x + width / 2, y);
+                this.context.lineTo(x - width / 2 + this.context.lineWidth / 2, y);
+                this.context.stroke();
+                this.context.moveTo(x - width / 2, y);
+                this.context.lineTo(x - width / 2 + this.context.lineWidth * 1.5, y + this.context.lineWidth * 1.5);
+                this.context.lineTo(x - width / 2 + this.context.lineWidth * 1.5, y - this.context.lineWidth * 1.5);
+                this.context.closePath()
+                this.context.fill();
+            } else {
+                this.wrapCanvasText(view.description, view.expanded * 2 *view.radius / 12, view.expanded * 0.8 * 2 * view.radius, below, true);
+            }
+        }
+        this.context.save();
+        let region = new Path2D();
+        region.arc(this.maskPosition.x, this.maskPosition.y, this.maskRadius, 0, 2*Math.PI);
+        this.context.clip(region, 'evenodd');
+        this.context.clearRect(0, 0, this.width, this.height);
+        this.context.fillStyle = 'rgba(255, 255, 255, ' + this.maskOpacity + ')';
+        this.context.fillRect(0, 0, this.width, this.height);
+    });
 
     nodeViews: NodeView[] = [];
     nodeLines: NodeLine[] = [];
     backgroundViews: NodeView[] = [];
     backgroundLines: NodeLine[] = [];
 
-    constructor(private navigationService: NodeNavigationService, private router: Router) {
-
-    }
+    constructor(private navigationService: NodeNavigationService, private router: Router) {}
 
     ngOnInit() {
-        if (window.location.hash) {
+        if (window.location.hash || window.location.href.split(window.location.host)[1].length > 1) {
             this.active = false;
         } else {
             this.active = true;
         }
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        this.width = window.innerWidth * window.devicePixelRatio;
+        this.height = window.innerHeight * window.devicePixelRatio;
     }
 
     ngAfterViewInit() {
+        if (this.active) {
+            this.renderer.start();
+        }
         this.navigationService.observeRoot().subscribe((node) => {
             this.update(node);
         });
@@ -116,6 +241,8 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         window.addEventListener('touchstart', (event: TouchEvent) => { this.onMouseMove(event.touches[0].pageX, event.touches[0].pageY) });
         window.addEventListener('touchmove', (event: TouchEvent) => { this.onMouseMove(event.touches[0].pageX, event.touches[0].pageY) });
         window.addEventListener('touchend', (event: TouchEvent) => { this.onMouseMove(-this.width, -this.height) });
+        window.addEventListener('click', (event) => { this.onMouseClick(event.pageX, event.pageY) });
+        window.addEventListener('touch', (event: TouchEvent) => { this.onMouseClick(event.touches[0].pageX, event.touches[0].pageY) });
     }
 
     public update(node: NavigationNode) {
@@ -131,19 +258,36 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         this.backgroundLines = [];
 
         this.current = node;
+
+        if (this.current.children.length < 1) {
+            this.current = this.current.parent;
+        }
+        
         this.createNodes(node, new Vector(this.width / 2, this.height / 2), this.height / 8);
         this.createBackground();
     }
 
     public onResize() {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        this.width = window.innerWidth * window.devicePixelRatio;
+        this.height = window.innerHeight * window.devicePixelRatio;
         this.update(this.current);
     }
 
     public onMouseMove(x: number, y: number) {
-        this.mouse.x = x;
-        this.mouse.y = y;
+        this.mouse.x = x * window.devicePixelRatio;
+        this.mouse.y = y * window.devicePixelRatio;
+    }
+
+    public onMouseClick(x: number, y: number) {
+        if (this.active) {
+            let mouse = new Vector(x * window.devicePixelRatio, y * window.devicePixelRatio);
+            for (let view of this.nodeViews) {
+                if (mouse.subtract(view.resolved).norm() < view.radius) {
+                    this.clickNode(view);
+                    break;
+                }
+            }
+        }
     }
 
     public findPrecedent() {
@@ -153,13 +297,15 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
             let dist = sep.norm();
             if (dist < view.radius) {
                 this.precedent = view;
-                break;
+                this.container.nativeElement.style.cursor = 'pointer';
+                return;
             }
             if (view.radius > max) {
                 this.precedent = view;
                 max = view.radius;
             }
         }
+        this.container.nativeElement.style.cursor = 'default';
     }
 
     public adjustView(view: NodeView) {
@@ -170,7 +316,7 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
             if (mouseDist < this.pull) {
                 view.pull = view.pull.add(mouseSeperation.multiply(0.1).negate());                    
             } else {
-                view.pull = view.pull.multiply(0.9);                    
+                view.pull = view.pull.multiply(0.95);                    
             }
         }
         view.expanded = Math.max(0, this.pull - mouseDist) / this.pull;
@@ -183,13 +329,13 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
                     let resolvedDist = resolvedSeperation.norm();
                     if (resolvedDist < (view.radius + compare.radius)*11/10) {
                         view.pull = view.pull.add(
-                            resolvedSeperation.unit().multiply(resolvedDist - (compare.radius + view.radius)*11/10).negate().multiply(0.9)
+                            resolvedSeperation.unit().multiply(resolvedDist - (compare.radius + view.radius)*11/10).negate().multiply(0.95)
                         );
                     }
                 }
             }
             if (!collided) {
-                view.pull = view.pull.multiply(0.9);
+                view.pull = view.pull.multiply(0.95);
             }
         }
     }
@@ -322,7 +468,11 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         this.expander = new LinearInterpolator(500, (value: number) => {
             this.maskRadius = value * Math.max(this.width, this.height);
             this.maskOpacity = 1 - value;
-        }, () => { this.active = false; this.router.navigate([this.current.route, this.current.extras]); });
+        }, () => { 
+            this.renderer.stop();
+            this.active = false;
+            this.router.navigate([this.current.route, this.current.extras]);
+        });
         this.expander.start();
     }
 
@@ -341,6 +491,7 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
         this.maskRadius = Math.max(this.width, this.height);
         this.maskOpacity = 0.0;
         this.active = true;
+        this.renderer.start();
         this.expander = new LinearInterpolator(500, (value: number) => {
             this.maskRadius = (1 - value) * Math.max(this.width, this.height);
             this.maskOpacity = value;
@@ -349,6 +500,8 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
     }
 
     public expandGroup(view: NodeView, retract: boolean = false) {
+        this.nodeViews.splice(this.nodeViews.indexOf(view), 1);
+        this.nodeViews = this.nodeViews.concat(view);
         const numViews = this.nodeViews.length;
         let numComplete = 0;
         let target = null;
@@ -364,6 +517,9 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
             view.node = target.node;
             view.opacity = 1.0;
             view.radius = view.radius;
+            let mid = new Vector(this.width / 2, this.height / 2);
+            view.pull = view.resolved.subtract(mid);
+            view.position = mid;
             view.interpolator = new ContinuousBezierInterpolator(view.time, (target.interpolator as ContinuousBezierInterpolator).curve,
                 (point: Vector, t: number) => {
                     view.position = point;

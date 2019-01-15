@@ -6,6 +6,7 @@ import { AppComponent } from './components/app.component';
 import { NodeNavigationComponent } from './components/node-navigation.component';
 
 import { ExperienceComponent } from './components/experience.component';
+import { SkillsComponent } from './components/skills.component';
 
 @Component({
     template: ''
@@ -33,6 +34,11 @@ export const appRoutes: Routes = [
     {
         path: 'experience',
         component: ExperienceComponent,
+        pathMatch: 'full'
+    },
+    {
+        path: 'skills',
+        component: SkillsComponent,
         pathMatch: 'full'
     },
     {
