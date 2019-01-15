@@ -76,6 +76,12 @@ func RequestToJSON(request *http.Request) (Dict, error) {
 	return dict, nil
 }
 
+var ANGULAR_ROUTES = [...]string{
+	"/about-me",
+	"/skills",
+	"/experience",
+}
+
 func main() {
 	var smtpHost string
 	flag.StringVar(&smtpHost, "mail", "patrickhadlaw.com", "mail host address")
@@ -117,7 +123,17 @@ func main() {
 	serveMux := http.NewServeMux()
 	apiMux := http.NewServeMux()
 
-	serveMux.Handle("/", http.FileServer(http.Dir("./com")))
+	fileServer := http.FileServer(http.Dir("./com"))
+
+	serveMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		for _, route := range ANGULAR_ROUTES {
+			if r.URL.Path == route {
+				r.URL.Path = "/index.html"
+				break
+			}
+		}
+		fileServer.ServeHTTP(w, r)
+	})
 
 	serveMux.Handle("/api/", http.StripPrefix("/api", apiMux))
 
@@ -188,8 +204,6 @@ func main() {
 		Handler:   loggingMux(serveMux),
 		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
 	}
-
-	manager.Cache
 
 	log.Println("serving patrickhadlaw.com on port:", port)
 	err = server.ListenAndServeTLS("", "")
