@@ -27,6 +27,12 @@ body {
     background-image: linear-gradient(to bottom right, blue, purple);
 }
 
+@media only screen and (max-width: 600px) {
+    .patrickhadlaw.styles.header {
+        flex-direction: column;
+    }
+}
+
 .patrickhadlaw.styles.logo {
     flex: 1 1 auto;
     display: flex;

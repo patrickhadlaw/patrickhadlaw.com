@@ -443,6 +443,8 @@ export class NodeNavigationComponent implements OnInit, AfterViewInit {
     }
 
     public clickNode(view: NodeView) {
+        this.mouse.x = -this.width;
+        this.mouse.y = -this.height;
         if (this.active) {
             if (view.node.externalRoute()) {
                 this.router.navigate([view.node.route, view.node.extras]);
