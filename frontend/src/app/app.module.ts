@@ -69,6 +69,12 @@ export const navigation = {
                     extras: { externalUrl: 'https://github.com/patrickhadlaw/py-mod-sort' }
                 },
                 {
+                    name: 'motionpong',
+                    description: 'A pong game controlled by motion of hands in front of sensors',
+                    route: '/external',
+                    extras: { externalUrl: 'https://github.com/patrickhadlaw/motionpong' }
+                },
+                {
                     name: 'patrickhadlaw.com',
                     description: 'This website',
                     route: '/external',
