@@ -103,37 +103,37 @@ export const navigation: NavigationNodeConfig = {
           name: 'cpp-opengl',
           description: 'A real-time GUI and 3D renderer',
           route: '/external',
-          extras: <NavigationExtras> { externalUrl: 'https://github.com/patrickhadlaw/cpp-opengl' }
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-opengl' } as NavigationExtras
         },
         {
           name: 'cpp-vulkan',
           description: 'A Vulkan API project',
           route: '/external',
-          extras: <NavigationExtras> { externalUrl: 'https://github.com/patrickhadlaw/cpp-vulkan' }
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-vulkan' } as NavigationExtras
         },
         {
           name: 'The-Brachistochrone-Curve',
           description: 'A web app/game relating to the brachistochrone curve',
           route: '/external',
-          extras: <NavigationExtras> { externalUrl: 'https://github.com/patrickhadlaw/The-Brachistochrone-Curve' }
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/The-Brachistochrone-Curve' } as NavigationExtras
         },
         {
           name: 'py-mod-sort',
           description: 'Sorting algorithm visualization',
           route: '/external',
-          extras: <NavigationExtras> { externalUrl: 'https://github.com/patrickhadlaw/py-mod-sort' }
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/py-mod-sort' } as NavigationExtras
         },
         {
           name: 'motionpong',
           description: 'A pong game controlled by motion of hands in front of sensors',
           route: '/external',
-          extras: <NavigationExtras> { externalUrl: 'https://github.com/patrickhadlaw/motionpong' }
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/motionpong' } as NavigationExtras
         },
         {
           name: 'patrickhadlaw.com',
           description: 'This website',
           route: '/external',
-          extras: <NavigationExtras> { externalUrl: 'https://github.com/patrickhadlaw/patrickhadlaw.com' }
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/patrickhadlaw.com' } as NavigationExtras
         }
       ]
     }

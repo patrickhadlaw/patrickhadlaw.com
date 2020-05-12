@@ -1,13 +1,16 @@
 {
   "name": "patrick-hadlaw",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "ng build",
+    "build:prod": "ng build --prod",
     "test": "ng test",
+    "test:ci": "ng test --browsers=Custom --watch=false",
     "lint": "ng lint",
+    "all:ci": "npm run test:ci && npm run lint && npm run build:prod",
     "e2e": "ng e2e"
   },
   "private": true,
@@ -46,7 +49,8 @@
     "karma-coverage-istanbul-reporter": "^3.0.2",
     "karma-jasmine": "~3.1.1",
     "karma-jasmine-html-reporter": "^1.5.3",
-    "protractor": "^5.4.4",
+    "protractor": "^6.0.0",
+    "puppeteer": "^3.0.4",
     "ts-node": "~8.10.1",
     "tslint": "^6.1.2",
     "typescript": "^3.8.3"
