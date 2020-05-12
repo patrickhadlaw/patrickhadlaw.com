@@ -1,13 +1,13 @@
 <div #container class="container" [style.width]="width">
-    <svg class="image" viewBox="0 0 4 4">
-        <svg:clipPath id="image-clip">
-            <path d="M 0,2 a 2,2 0 1,0 4, 0 a 2,2 0 1,0 -4, 0"/>
-        </svg:clipPath>
-        <svg:image [attr.xlink:href]="src" width="100%" height="100%" x="0" y="0" clip-path="url(#image-clip)"></svg:image>
-    </svg>
-    <div class="content-container" [style.color]="color">
-        <div class="content">
-            <ng-content></ng-content>
-        </div>
+  <svg class="image" viewBox="0 0 4 4">
+    <svg:clipPath id="image-clip">
+      <path d="M 0,2 a 2,2 0 1,0 4, 0 a 2,2 0 1,0 -4, 0" />
+    </svg:clipPath>
+    <svg:image [attr.xlink:href]="src" width="100%" height="100%" x="0" y="0" clip-path="url(#image-clip)"></svg:image>
+  </svg>
+  <div class="content-container" [style.color]="color">
+    <div class="content">
+      <ng-content></ng-content>
     </div>
+  </div>
 </div>

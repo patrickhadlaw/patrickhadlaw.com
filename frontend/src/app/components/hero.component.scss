@@ -1,48 +1,48 @@
 .container {
-    display: flex;
-    flex-direction: row;
-    font-size: 50px;
-    justify-content: center;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 75px;
+  display: flex;
+  flex-direction: row;
+  font-size: 50px;
+  justify-content: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 75px;
 }
 
 .image {
-    flex: none;
-    width: 4cm;
-    height: 4cm;
-    margin-right: 5vw;
+  flex: none;
+  width: 4cm;
+  height: 4cm;
+  margin-right: 5vw;
 }
 
 .content-container {
-    position: relative;
+  position: relative;
 }
 .content {
-    display: flex;
-    background-color: rgb(240, 240, 240);
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0px 2px 6px -2px #a1a1a1;
-    border-radius: 5px;
-    font-size: 18px;
-    padding: 0.5cm;
-    &:after {
-        content: '';
-        position: absolute;
-        left: -0.6cm;
-        top: 0.2cm;
-        border: 0.3cm solid transparent;
-        border-right: 0.3cm solid rgb(240, 240, 240);
-    }
+  display: flex;
+  background-color: rgb(240, 240, 240);
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0px 2px 6px -2px #a1a1a1;
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 0.5cm;
+  &:after {
+    content: "";
+    position: absolute;
+    left: -0.6cm;
+    top: 0.2cm;
+    border: 0.3cm solid transparent;
+    border-right: 0.3cm solid rgb(240, 240, 240);
+  }
 }
 @media only screen and (max-width: 600px) {
-    .content {
-        font-size: 12px;
-    }
-    .image {
-        width: 2cm;
-        height: 2cm;
-    }
+  .content {
+    font-size: 12px;
+  }
+  .image {
+    width: 2cm;
+    height: 2cm;
+  }
 }
