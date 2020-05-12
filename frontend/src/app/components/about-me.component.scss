@@ -1,167 +1,175 @@
 .right-header-content {
-    flex: 1 1 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-left: 1cm;
-    padding-right: 1cm;
-    flex-direction: column;
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 1cm;
+  padding-right: 1cm;
+  flex-direction: column;
 }
 .description {
-    color: white;
-    max-width: 22.38cm;
-    font-size: 0.475cm;
-    font-weight: 300;
-    text-align: center;
+  color: white;
+  max-width: 22.38cm;
+  font-size: 0.475cm;
+  font-weight: 300;
+  text-align: center;
 }
 .row {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 .header-button {
-    border: 0.0525cm solid #FFFFFF;
-    font-weight: bold;
-    color: white;
-    margin-top: 0.61cm;
-    margin-left: 0.225cm;
-    margin-right: 0.225cm;
-    padding: 0.265cm 0.53cm;
-    font-size: 0.3175cm;
-    text-decoration: none;
-    &:hover {
-        color: purple;
-        background-color: white;
-        cursor: pointer;
-    }
-    &::selection {
-        background: none;
-    }
+  border: 0.0525cm solid #ffffff;
+  font-weight: bold;
+  color: white;
+  margin-top: 0.61cm;
+  margin-left: 0.225cm;
+  margin-right: 0.225cm;
+  padding: 0.265cm 0.53cm;
+  font-size: 0.3175cm;
+  text-decoration: none;
+  &:hover {
+    color: purple;
+    background-color: white;
+    cursor: pointer;
+  }
+  &::selection {
+    background: none;
+  }
 }
 a > .header-button {
-    color: none;
-    text-decoration: inherit;
+  color: none;
+  text-decoration: inherit;
 }
 @media only screen and (max-width: 600px) {
-    .header {
-        flex-direction: column;
-    }
-    .description {
-        margin-top: 0.5cm;
-    }
+  .header {
+    flex-direction: column;
+  }
+  .description {
+    margin-top: 0.5cm;
+  }
 }
 
 .row-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    margin-top: 0.25in;
-    margin-bottom: 0.25in;
-    justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 0.25in;
+  margin-bottom: 0.25in;
+  justify-content: center;
 }
 
 .social-icon-container {
-    margin-left: 5vw;
-    margin-right: 5vw;
+  margin-left: 5vw;
+  margin-right: 5vw;
 }
 
 .social-icon {
-    width: 75px;
-    height: 75px;
-    &:hover {
-        filter: invert(50%);
-        cursor: pointer;
-    }
-    &:active {
-        transform: scale(0.95, 0.95);
-    }
+  width: 75px;
+  height: 75px;
+  &:hover {
+    filter: invert(50%);
+    cursor: pointer;
+  }
+  &:active {
+    transform: scale(0.95, 0.95);
+  }
 }
 
 .contact-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-image: linear-gradient(to bottom right, blue, purple);
-    padding-top: 0.5cm;
-    padding-bottom: 1cm;
-    color: white;
-    margin-bottom: 1.0cm;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-image: linear-gradient(to bottom right, blue, purple);
+  padding-top: 0.5cm;
+  padding-bottom: 1cm;
+  color: white;
+  margin-bottom: 1cm;
+  width: 100%;
 }
 
 .textbox-title {
-    width: 30%;
-    min-width: 6cm;
+  width: 30%;
+  min-width: 6cm;
 }
 .quote-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    background-color: white;
-    padding-top: 1cm;
-    padding-bottom: 1cm;
-    font-size: 20px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: white;
+  padding-top: 1cm;
+  padding-bottom: 1cm;
+  font-size: 20px;
 }
 .contact-textbox {
-    background-color: transparent;
-    border: none;
-    padding: 2mm;
-    width: 30%;
-    min-width: 6cm;
-    border-bottom: 2px solid #bfbfbf;
-    transition: 0.25s;
-    &:focus {
-        outline: none;
-        background-color: white;
-        border-bottom: 2px solid black;
-    }
-    &.white {
-        background-color: white;
-    }
+  background-color: transparent;
+  border: none;
+  padding: 2mm;
+  width: 30%;
+  min-width: 6cm;
+  border-bottom: 2px solid #bfbfbf;
+  transition: 0.25s;
+  &:focus {
+    outline: none;
+    background-color: white;
+    border-bottom: 2px solid black;
+  }
+  &.white {
+    background-color: white;
+  }
 }
 @keyframes success {
-    from {border: 0.0525cm solid #aaff00; background-color: #aaff00;}
-    to {}
+  from {
+    border: 0.0525cm solid #aaff00;
+    background-color: #aaff00;
+  }
+  to {
+  }
 }
 @keyframes failure {
-    from {border: 0.0525cm solid #ff6600; background-color: #ff6600;}
-    to {}
+  from {
+    border: 0.0525cm solid #ff6600;
+    background-color: #ff6600;
+  }
+  to {
+  }
 }
 .submit-button {
+  border: 0.0525cm solid black;
+  font-weight: bold;
+  text-align: center;
+  width: 30%;
+  min-width: 6cm;
+  color: black;
+  margin-top: 0.61cm;
+  margin-left: 0.225cm;
+  margin-right: 0.225cm;
+  padding: 0.265cm 0.53cm;
+  &:hover {
+    color: white;
+    background-color: black;
+    cursor: pointer;
+  }
+  &:active {
     border: 0.0525cm solid black;
-    font-weight: bold;
-    text-align: center;
-    width: 30%;
-    min-width: 6cm;
-    color: black;
-    margin-top: 0.61cm;
-    margin-left: 0.225cm;
-    margin-right: 0.225cm;
-    padding: 0.265cm 0.53cm;
-    &:hover {
-        color: white;
-        background-color: black;
-        cursor: pointer;
-    }
-    &:active {
-        border: 0.0525cm solid black;
-    }
-    &::selection {
-        background: none;
-    }
-    &.success {
-        animation: success 2s;
-    }
-    &.failure {
-        animation: failure 2s;
-    }
+  }
+  &::selection {
+    background: none;
+  }
+  &.success {
+    animation: success 2s;
+  }
+  &.failure {
+    animation: failure 2s;
+  }
 }
 
 .footer {
-    display: flex;
-    align-items: center;
-    margin-top: auto;
-    justify-content: center;
-    height: 50px;
-    color: #1a1a1a;
-    border-top: 1px solid #a1a1a1;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  justify-content: center;
+  height: 50px;
+  color: #1a1a1a;
+  border-top: 1px solid #a1a1a1;
 }
