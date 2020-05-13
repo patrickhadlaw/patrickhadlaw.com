@@ -20,7 +20,7 @@ export class AboutMeComponent {
 
   readonly Email = 'mailto:' + SocialLinks.Email;
   readonly Github = SocialLinks.Github;
-  readonly Linkedin = SocialLinks.LinkedIn;
+  readonly LinkedIn = SocialLinks.LinkedIn;
 
   sendState: SendState = SendState.NotSent;
 
@@ -28,7 +28,7 @@ export class AboutMeComponent {
 
   sendMessage() {
     this.sendState = SendState.NotSent;
-    this.apiService.contactMe(<ContactMeRequest> {
+    this.apiService.contactMe({
       name: this.messageName.nativeElement.value,
       email: this.messageEmail.nativeElement.value,
       message: this.messageContent.nativeElement.value

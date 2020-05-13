@@ -2,10 +2,7 @@ export class Vector {
   data: number[];
 
   constructor(...numbers: number[]) {
-    this.data = [];
-    for (let i = 0; i < numbers.length; i++) {
-      this.data.push(numbers[i] as number);
-    }
+    this.data = [...numbers];
   }
 
   get x(): number {
@@ -36,11 +33,11 @@ export class Vector {
     this.data[3] = value;
   }
 
-  multiply(other) {
+  multiply(other: number | Matrix) {
     if (typeof other === 'number') {
       const result = [];
-      for (let i = 0; i < this.data.length; i++) {
-        result.push(this.data[i] * other);
+      for (const comp of this.data) {
+        result.push(comp * other);
       }
       return new Vector(...result);
     } else if (other instanceof Matrix) {
@@ -52,12 +49,8 @@ export class Vector {
     }
   }
 
-  divide(denominator) {
-    const result = [];
-    for (let i = 0; i < this.data.length; i++) {
-      result.push(this.data[i] / denominator);
-    }
-    return new Vector(...result);
+  divide(denominator: number) {
+    return new Vector(...this.data.map(comp => comp / denominator));
   }
 
   add(other: Vector): Vector {
@@ -74,7 +67,7 @@ export class Vector {
 
   subtract(other: Vector): Vector {
     if (other.data.length === this.data.length) {
-      let result = [];
+      const result = [];
       for (let i = 0; i < this.data.length; i++) {
         result.push(this.data[i] - other.data[i]);
       }
@@ -85,11 +78,7 @@ export class Vector {
   }
 
   negate(): Vector {
-    const result = [];
-    for (let i = 0; i < this.data.length; i++) {
-      result.push(-this.data[i]);
-    }
-    return new Vector(...result);
+    return new Vector(...this.data.map(comp => -comp));
   }
 
   dot(other: Vector) {
@@ -103,7 +92,7 @@ export class Vector {
     return result;
   }
 
-  cross(other) {
+  cross(other: Vector) {
     if (this.data.length === other.data.length) {
       if (this.data.length === 3) {
         // TODO: implement cross product
@@ -115,8 +104,8 @@ export class Vector {
 
   norm() {
     let result = 0.0;
-    for (let i = 0; i < this.data.length; i++) {
-      result += this.data[i] * this.data[i];
+    for (const comp of this.data) {
+      result += comp * comp;
     }
     return Math.sqrt(result);
   }
@@ -146,14 +135,21 @@ export class Matrix {
     }
   }
 
-  multiply(other) {
+  static rotation(theta: number): Matrix {
+    return new Matrix(
+      [Math.cos(theta), -Math.sin(theta)],
+      [Math.sin(theta), Math.cos(theta)]
+    );
+  }
+
+  multiply(other: Vector | Matrix) {
     if (other instanceof Vector) {
       if (other.data.length === this.n) {
         const result: number[] = [];
-        for (let i = 0; i < this.data.length; i++) {
+        for (const vec of this.data) {
           let value = 0.0;
           for (let j = 0; j < this.n; j++) {
-            value += this.data[i][j] * other.data[j];
+            value += vec[j] * other.data[j];
           }
           result.push(value);
         }
@@ -162,7 +158,7 @@ export class Matrix {
         throw new Error('Invalid matrix multiplicaton: invalid dimensions');
       }
     } else if (other instanceof Matrix) {
-
+      // TODO: implement matrix by matrix multiplication
     } else {
       throw new Error('Invalid matrix multiplication: invalid type');
     }
@@ -170,14 +166,7 @@ export class Matrix {
   }
 }
 
-export function rotationMatrix(theta): Matrix {
-  return new Matrix(
-    [Math.cos(theta), -Math.sin(theta)],
-    [Math.sin(theta), Math.cos(theta)]
-  );
-}
-
-export function rotatePoint(point, theta) {
-  const rx = rotationMatrix(theta);
+export function rotatePoint(point: Vector, theta: number) {
+  const rx = Matrix.rotation(theta);
   return rx.multiply(point);
 }

@@ -1,11 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'app-chip',
-  host: {
-    '[style.width]': 'widthString',
-    '[style.maxWidth.px]': '800'
-  },
   templateUrl: './chip.component.html',
   styleUrls: ['./chip.component.scss']
 })
@@ -41,7 +37,7 @@ export class ChipComponent implements OnInit {
         return 37.5;
     }
   }
-  get widthString(): string {
+  @HostBinding('style.width') get widthString(): string {
     switch (this.size) {
       case 'mini':
         return 'auto';
