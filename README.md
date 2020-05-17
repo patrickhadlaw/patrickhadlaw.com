@@ -29,21 +29,15 @@ $ docker build . -t <image:tag>
 $ docker push <image:tag>
 ```
 
-### Run instructions
-```
-$ source environment.env
-$ docker-compose up -d
-```
-
 ### Setup
 * To be able to use contact features a mail server will need to be hosted
 * When running server `--mail` flag should be set to your smtp-host name `--smtp-port` should be set and `--smtp` should be set to your smtp server
 * Upon running server you will be prompted for password and email for the target contact email address
 * Resume should be placed in project/com/assets dir as RESUME.pdf
 
-## Run instructions: 
-
+## Run instructions
 ```
+$ git clone https://github.com/patrickhadlaw/patrickhadlaw.com
 $ cd patrickhadlaw.com
-$ ./patrick-hadlaw-server [--help] [--mail=<smtp-host>] [--smtp=<smtp-server>] [--smtp-port=<smtp-port>] [--log=<log-file>] [--port=<port>]
+$ docker-compose up -d
 ```
