@@ -1,0 +1,17 @@
+version: '3'
+services:
+  patrickhadlaw.com:
+    image: "patrickhadlaw/patrickhadlaw.com:${TAG}"
+    restart: always
+    ports:
+      - 80:80
+      - "${APP_PORT}:${APP_PORT}"
+      - "${SMTP_PORT}:${SMTP_PORT}"
+    environment:
+      - DOMAIN=${DOMAIN}
+      - APP_PORT=${APP_PORT}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - CONTACT_ME=${CONTACT_ME}
+      - MAIL_SERVER_USER=${MAIL_SERVER_USER}
+      - MAIL_SERVER_PASSWORD=${MAIL_SERVER_PASSWORD}

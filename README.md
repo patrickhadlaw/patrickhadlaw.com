@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-* Golang
+* Docker + Docker Compose
 * npm - nodejs
 
 ## Liscensing
@@ -15,7 +15,7 @@
 
 ## Build instructions
 
-### Server setup
+### Build instructions
 ```
 $ git clone https://github.com/patrickhadlaw/patrickhadlaw.com
 $ cd patrickhadlaw.com/frontend
@@ -25,9 +25,14 @@ $ npm install
 $ ng build --prod
 $ cp -r dist/* ../com/
 $ cd ..
-$ go get golang.org/x/crypto/ssh/terminal
-$ go get golang.org/x/crypto/acme/autocert
-$ go build patrick-hadlaw-server.go
+$ docker build . -t <image:tag>
+$ docker push <image:tag>
+```
+
+### Run instructions
+```
+$ source environment.env
+$ docker-compose up -d
 ```
 
 ### Setup
