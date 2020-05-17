@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"crypto/tls"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -12,22 +10,23 @@ import (
 	"net/smtp"
 	"os"
 	"strconv"
-	"syscall"
 	"time"
 
 	"golang.org/x/crypto/acme/autocert"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
+// LoggingResponseWriter is a response writer that logs requests
 type LoggingResponseWriter struct {
 	http.ResponseWriter
 	status int
 }
 
+// NewLoggingResponseWriter creates a new LoggingResponseWriter
 func NewLoggingResponseWriter(w http.ResponseWriter) *LoggingResponseWriter {
 	return &LoggingResponseWriter{w, http.StatusOK}
 }
 
+// WriteHeader writes the response header given a status code
 func (writer *LoggingResponseWriter) WriteHeader(code int) {
 	writer.status = code
 	writer.ResponseWriter.WriteHeader(code)
@@ -46,79 +45,69 @@ func loggingMux(mux *http.ServeMux) http.Handler {
 	})
 }
 
-// Dict is a generic dictionary
-type Dict map[string]interface{}
-
-// Exists checks if key exists in dictionary
-func (dict Dict) Exists(key string) bool {
-	_, ok := dict[key]
-	return ok
-}
-
-// ToDict converts json to dictionary
-func ToDict(str string) (Dict, error) {
-	var dict Dict
-	err := json.Unmarshal([]byte(str), &dict)
-	if err != nil {
-		return nil, err
+func lookupIntEnv(name string) (int, bool) {
+	val, exists := os.LookupEnv(name)
+	if exists {
+		result, err := strconv.Atoi(val)
+		return result, err == nil
 	}
-	return dict, nil
+	return 0, false
 }
 
-// RequestToJSON turns request body into dictionary
-func RequestToJSON(request *http.Request) (Dict, error) {
-	decoder := json.NewDecoder(request.Body)
-	var dict Dict
-	err := decoder.Decode(&dict)
-	if err != nil {
-		return nil, err
-	}
-	return dict, nil
+// ContactMeRequest defines the request body for a contact me request
+type ContactMeRequest struct {
+	Name    string
+	Email   string
+	Message string
 }
 
-var ANGULAR_ROUTES = [...]string{
+// AngularRoutes stores the frontend routes to ignore
+var AngularRoutes = [...]string{
 	"/about-me",
 	"/skills",
 	"/experience",
 }
 
+// LogFile stores the filename to log to
+const LogFile = "runtime.log"
+
 func main() {
-	var smtpHost string
-	flag.StringVar(&smtpHost, "mail", "patrickhadlaw.com", "mail host address")
-	var smtpServer string
-	flag.StringVar(&smtpServer, "smtp", "patrickhadlaw.com", "smtp server address")
-	var contactEmail string
-	flag.StringVar(&contactEmail, "contact", "patrickhadlaw@gmail.com", "smtp server address")
-	var logfile string
-	flag.StringVar(&logfile, "log", "runtime.log", "name of log file")
-	var port int
-	flag.IntVar(&port, "port", 443, "port to run server on")
-	var smtpPort int
-	flag.IntVar(&smtpPort, "smtp-port", 587, "port for smtp requests")
+	domain, exists := os.LookupEnv("DOMAIN")
+	if !exists {
+		log.Fatalln("environment variable 'DOMAIN' not set")
+	}
+	port, exists := lookupIntEnv("APP_PORT")
+	if !exists {
+		log.Fatalln("environment variable 'APP_PORT' not set")
+	}
+	smtpHost, exists := os.LookupEnv("SMTP_HOST")
+	if !exists {
+		log.Fatalln("environment variable 'SMTP_HOST' not set")
+	}
+	smtpPort, exists := lookupIntEnv("SMTP_PORT")
+	if !exists {
+		log.Fatalln("environment variable 'SMTP_PORT' not set")
+	}
+	contactEmail, exists := os.LookupEnv("CONTACT_ME")
+	if !exists {
+		log.Fatalln("environment variable 'CONTACT_ME' not set")
+	}
+	mailUser, exists := os.LookupEnv("MAIL_SERVER_USER")
+	if !exists {
+		log.Fatalln("environment variable 'MAIL_SERVER_USER' not set")
+	}
+	mailPassword, exists := os.LookupEnv("MAIL_SERVER_PASSWORD")
+	if !exists {
+		log.Fatalln("environment variable 'MAIL_SERVER_PASSWORD' not set")
+	}
 
-	flag.Parse()
-
-	file, err := os.OpenFile(logfile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening log-file: %v", err)
 	}
 
 	multiWriter := io.MultiWriter(os.Stdout, file)
-
 	log.SetOutput(multiWriter)
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Mail-server-user: ")
-	mailUser, _ := reader.ReadString('\n')
-	mailUser = mailUser[0 : len(mailUser)-2] // Remove newline
-
-	fmt.Print("\nMail-server-password: ")
-	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
-	if err != nil {
-		log.Fatal("Invalid password")
-	}
-	password := string(bytePassword)
-	fmt.Printf("\n\n")
 
 	serveMux := http.NewServeMux()
 	apiMux := http.NewServeMux()
@@ -126,7 +115,7 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./com"))
 
 	serveMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		for _, route := range ANGULAR_ROUTES {
+		for _, route := range AngularRoutes {
 			if r.URL.Path == route {
 				r.URL.Path = "/index.html"
 				break
@@ -138,41 +127,31 @@ func main() {
 	serveMux.Handle("/api/", http.StripPrefix("/api", apiMux))
 
 	apiMux.HandleFunc("/message/send", func(w http.ResponseWriter, r *http.Request) {
-		js, err := RequestToJSON(r)
+		var contactMeRequest ContactMeRequest
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&contactMeRequest)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			if js.Exists("name") && js.Exists("email") && js.Exists("message") {
-				if name, ok := js["name"].(string); ok {
-					if email, ok := js["email"].(string); ok {
-						if message, ok := js["message"].(string); ok {
-							auth := smtp.PlainAuth("", mailUser, password, smtpServer)
-							msg := []byte("From: " + "contact@" + smtpHost + "\r\n" +
-								"To: " + contactEmail + "\r\n" +
-								"Subject: Contact message\r\n\r\n" +
-								"Contact message from patrickhadlaw.com\r\n" +
-								"Name: " + name + "\r\n" +
-								"Email: " + email + "\r\n" +
-								"\r\nMessage: " + message)
-
-							err = smtp.SendMail(smtpServer+":"+strconv.Itoa(smtpPort), auth, contactEmail, []string{contactEmail}, msg)
-							if err != nil {
-								log.Printf("ERROR: failed to send mail: %s", err.Error())
-								w.WriteHeader(http.StatusInternalServerError)
-							} else {
-								log.Printf("Sent message from: %s with email: %s", name, email)
-							}
-						} else {
-							w.WriteHeader(http.StatusBadRequest)
-						}
-					} else {
-						w.WriteHeader(http.StatusBadRequest)
-					}
-				} else {
-					w.WriteHeader(http.StatusBadRequest)
-				}
+			auth := smtp.PlainAuth("", mailUser, mailPassword, smtpHost)
+			msg := []byte("From: " + "contact@" + domain + "\r\n" +
+				"To: " + contactEmail + "\r\n" +
+				"Subject: Contact message\r\n\r\n" +
+				"Contact message from patrickhadlaw.com\r\n" +
+				"Name: " + contactMeRequest.Name + "\r\n" +
+				"Email: " + contactMeRequest.Email + "\r\n" +
+				"\r\nMessage: " + contactMeRequest.Message)
+			err = smtp.SendMail(
+				fmt.Sprintf("%s:%d", smtpHost, smtpPort),
+				auth,
+				contactEmail,
+				[]string{contactEmail},
+				msg)
+			if err != nil {
+				log.Printf("ERROR: failed to send mail: %s", err.Error())
+				w.WriteHeader(http.StatusInternalServerError)
 			} else {
-				w.WriteHeader(http.StatusBadRequest)
+				log.Printf("Sent message from: %s with email: %s", contactMeRequest.Name, contactMeRequest.Email)
 			}
 		}
 	})
@@ -200,7 +179,7 @@ func main() {
 	}()
 
 	server := http.Server{
-		Addr:      ":" + strconv.Itoa(port),
+		Addr:      fmt.Sprintf(":%d", port),
 		Handler:   loggingMux(serveMux),
 		TLSConfig: &tls.Config{GetCertificate: manager.GetCertificate},
 	}

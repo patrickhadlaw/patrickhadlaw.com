@@ -5,7 +5,3 @@
 *.key
 *.cert
 *.exe
-
-# Ignore web root
-com/*
-!com/.gitkeep
