@@ -1,5 +1,10 @@
 import { Vector } from './vector';
 
+/**
+ * Computes the factorial of a given number
+ * @param n the number to compute the factorial of
+ * @returns n factorial
+ */
 export function factorial(n: number): number {
   let result = n;
   for (let i = n - 1; i > 1; i--) {
@@ -8,6 +13,12 @@ export function factorial(n: number): number {
   return result;
 }
 
+/**
+ * Computes a given binomial coeffiecient for a given degree
+ * @param n the degree
+ * @param k the coefficient index
+ * @returns the binomial coefficient
+ */
 export function binomialCoefficient(n: number, k: number): number {
   if (k === 0) {
     return 1;
@@ -19,6 +30,12 @@ export function binomialCoefficient(n: number, k: number): number {
   return result;
 }
 
+/**
+ * Computes the nth order bezier curve given a parameter and a set of control points
+ * @param t the parameter
+ * @param controls the control points
+ * @returns the nth order bezier curve in one axis
+ */
 export function nthOrderBezierCurve(t: number, controls: number[]) {
   const n = controls.length - 1;
   let result = 0;
@@ -28,6 +45,9 @@ export function nthOrderBezierCurve(t: number, controls: number[]) {
   return result;
 }
 
+/**
+ * Stores a bezier curve
+ */
 export class BezierCurve {
   private _dimension: number;
   private _controls: number[][];
@@ -49,6 +69,22 @@ export class BezierCurve {
     }
   }
 
+  /**
+   * Creates a typical cubic transition curve
+   */
+  public static cubicTransition(): BezierCurve {
+    return new BezierCurve(
+      new Vector(0, 0),
+      new Vector(0.5, 0),
+      new Vector(0.5, 1),
+      new Vector(1, 1)
+    );
+  }
+
+  /**
+   * Evaluates the bezier curve at a given point
+   * @param t the parameterized point to evaluate at
+   */
   public evaluate(t: number) {
     if (t > 1) {
       return this.evaluate(1);
@@ -63,6 +99,10 @@ export class BezierCurve {
     return vec;
   }
 
+  /**
+   * Computes a vector tangent to the end of the curve
+   * @returns a vector tangent to the end of the curve
+   */
   public endTangent(): Vector {
     if (this._dimension < 2) {
       throw new Error('cannot evaluate tangent of one dimensional Bezier Curve');
@@ -78,7 +118,11 @@ export class BezierCurve {
     }
   }
 
-  public generateLookupTable(step: number): Vector[] { // TODO: implement lookup table generator
+  /**
+   * Generates a lookup table which steps along the bezier curve
+   * @returns a lookup table of steps to points
+   */
+  public generateLookupTable(step: number): Vector[] {
     const result = [];
     for (let i = 0; i < 1.0; i += step) {
       result.push(this.evaluate(i));
@@ -86,6 +130,10 @@ export class BezierCurve {
     return result;
   }
 
+  /**
+   * Creates an svg path description of the given bezier curve
+   * @returns the svg path description
+   */
   public getSVGQuadraticPath(): string {
     if (this._dimension !== 2) {
       throw new Error('cannot create path of one dimensional Bezier Curve');

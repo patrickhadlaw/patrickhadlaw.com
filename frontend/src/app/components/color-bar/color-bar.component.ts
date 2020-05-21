@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, HostListener, Input, AfterViewInit, OnChanges } from '@angular/core';
 
-import { Color } from '../util/color';
+import { Color } from '../../util/color';
 
 @Component({
   selector: 'app-color-bar',

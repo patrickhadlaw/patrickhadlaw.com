@@ -1,172 +1,223 @@
 import { BezierCurve } from './bezier';
 import { Vector } from './vector';
+import { Subject, timer, Observable, interval } from 'rxjs';
+import { map, filter, tap, finalize, takeUntil } from 'rxjs/operators';
 
 export const AnimationFramerate = 30;
 export const AnimationPeriod = 1000 / AnimationFramerate;
 
-export class Interpolator {
-  public start() { }
-  public stop() { }
-  public scale(x: number): number { return x; }
-  public interpolate() { }
-}
+/**
+ * A generic interpolator for custom animations
+ */
+export abstract class Interpolator<T> {
 
-export class LinearInterpolator extends Interpolator {
+  private interval$: Observable<unknown>;
+  private destroyInterval$ = new Subject();
+  private observers = 0;
+  private running = false;
+  private tick: number;
+  private counter = 0;
 
-  protected time: number;
-  protected update: (value: number) => void;
-  protected complete: () => void;
-  protected tick: number;
-  protected interval: number;
-  protected current = 0;
-
-  constructor(
-    time: number,
-    update: (value: number) => void,
-    complete: () => void,
-    tick: number = AnimationFramerate
-  ) {
-    super();
-    this.time = time;
-    this.update = update;
-    this.complete = complete;
+  constructor(tick: number) {
     this.tick = tick;
   }
 
+  /**
+   * Starts the interpolator from the beginning
+   */
   public start() {
-    this.interval = window.setInterval(() => this.interpolate(), this.tick);
+    this.running = true;
+    this.reset();
   }
+
+  /**
+   * Stops the interpolator and resets its value
+   */
   public stop() {
-    window.clearInterval(this.interval);
+    this.running = false;
+    this.reset();
   }
 
-  public scale(x: number): number {
-    return x;
+  /**
+   * Pauses the interpolator
+   */
+  public pause() {
+    this.running = false;
   }
 
-  public interpolate() {
-    if (this.current > this.time) {
-      this.current = this.time;
-      this.stop();
-      this.complete();
-    }
-    const value = this.scale(this.current / this.time);
-    this.update(value);
-    this.current += this.tick;
-  }
-}
-
-export class ContinuousInterpolator extends Interpolator {
-  protected tick: number;
-  protected update: () => void;
-  protected interval: number;
-
-  constructor(update: () => void, tick: number = AnimationPeriod) {
-    super();
-    this.tick = tick;
-    this.update = update;
-  }
-
-  public start() {
-    this.interval = window.setInterval(() => this.interpolate(), this.tick);
-  }
-  public stop() {
-    window.clearInterval(this.interval);
-  }
-
-  public interpolate() {
-    this.update();
-  }
-}
-
-// IDEA: calculate lookup table for continuous interpolator
-export class ContinuousBezierInterpolator extends Interpolator {
-  protected time: number;
-  protected tick: number;
-  protected update: (point: Vector, t: number) => void;
-  protected loop: (point: Vector, t: number) => void;
-  protected interval: number;
-  protected current = 0;
-  protected lookupTable: Vector[];
-  protected holding = false;
-
-  protected _curve: BezierCurve;
-
-  get curve(): BezierCurve {
-    return this._curve;
-  }
-  set curve(curve: BezierCurve) {
-    this._curve = curve;
-  }
-
-  constructor(
-    time: number,
-    curve: BezierCurve,
-    update: (point: Vector, t: number) => void,
-    tick: number = AnimationPeriod
-  ) {
-    super();
-    this.tick = tick;
-    this.time = time;
-    this.curve = curve;
-    this.update = update;
-    this.lookupTable = this.curve.generateLookupTable(this.tick / this.time);
-  }
-
-  public start() {
-    this.interval = window.setInterval(() => this.interpolate(), this.tick);
-  }
-  public stop() {
-    window.clearInterval(this.interval);
-  }
-
-  public hold() {
-    this.holding = true;
-  }
+  /**
+   * Continues the interpolator
+   */
   public continue() {
-    this.holding = false;
+    this.running = true;
   }
 
-  public interpolate() {
-    const t = (this.current % this.time) / this.time;
-    this.update(this.lookupTable[Math.floor(t * (this.lookupTable.length - 1))], t);
-    if (!this.holding) {
-      this.current += this.tick;
+  /**
+   * Resets the interpolator
+   */
+  public reset() {
+    this.counter = 0;
+  }
+
+  /**
+   * Whether the interpolator is currently running
+   * @returns true if interpolator is running
+   */
+  public isRunning(): boolean {
+    return this.running;
+  }
+
+  /**
+   * Observes the value of the interpolator
+   * @returns the value observable
+   */
+  public value(): Observable<T> {
+    this.observers++;
+    if (this.interval$ == null) {
+      this.interval$ = interval(this.tick).pipe(takeUntil(this.destroyInterval$));
     }
+    return this.interval$.pipe(
+      finalize(() => {
+        this.observers--;
+        if (this.observers === 0) {
+          this.destroyInterval$.next();
+        }
+      }),
+      filter(_ => this.running),
+      tap(_ => this.counter += this.tick),
+      map(_ => this.interpolate(this.counter))
+    );
+  }
+
+  /**
+   * An interpolation function
+   * @param time is the accumulated time since start
+   * @returns the interpolated value at the given time step
+   */
+  public abstract interpolate(time: number): T;
+}
+
+/**
+ * A linear interpolator which implements a linear transition function
+ */
+export class LinearInterpolator extends Interpolator<number> {
+
+  protected complete$ = new Subject();
+
+  constructor(protected duration: number, tick: number = AnimationFramerate) {
+    super(tick);
+  }
+
+  /**
+   * Observes the completion of the interpolator
+   * @returns an observable observing when the interpolator has completed
+   */
+  public complete(): Observable<unknown> {
+    return this.complete$.asObservable();
+  }
+
+  /**
+   * Linear interpolator implementation
+   * @param time the time along the interpolation
+   */
+  public interpolate(time: number): number {
+    if (time > this.duration) {
+      this.stop();
+      this.complete$.next();
+    }
+    return time / this.duration;
   }
 }
 
-export class BezierInterpolator extends ContinuousBezierInterpolator {
+/**
+ * A continuously updating linear interpolator
+ */
+export class ContinuousInterpolator extends Interpolator<number> {
 
-  protected complete: (point: Vector) => void;
+  constructor(tick: number = AnimationPeriod) {
+    super(tick);
+  }
+
+  /**
+   * Continuous interpolator implementation
+   * @param time the time along the interpolation
+   */
+  public interpolate(time: number) {
+    return time;
+  }
+}
+
+export interface BezierInterpolatorValue {
+  point: Vector;
+  t: number;
+}
+
+/**
+ * A continuously updating bezier curve interpolator
+ */
+export class ContinuousBezierInterpolator extends Interpolator<BezierInterpolatorValue> {
+  protected loop: (point: Vector, t: number) => void;
+  protected lookupTable: Vector[];
 
   constructor(
-    time: number,
-    curve: BezierCurve,
-    update: (point: Vector, t: number) => void,
-    complete: (point: Vector) => void,
+    protected duration: number,
+    protected curve: BezierCurve,
     tick: number = AnimationPeriod
   ) {
-    super(time, curve, update, tick);
-    this.complete = complete;
+    super(tick);
+    this.lookupTable = this.curve.generateLookupTable(tick / this.duration);
   }
 
-  public start() {
-    this.current = 0;
-    this.interval = window.setInterval(() => this.interpolate(), this.tick);
+  /**
+   * Bezier interpolator implementation
+   * @param time the time along the interpolation
+   */
+  public interpolate(time: number): BezierInterpolatorValue {
+    const t = (time % this.duration) / this.duration;
+    return {
+      point: this.lookupTable[Math.floor(t * (this.lookupTable.length - 1))],
+      t
+    } as BezierInterpolatorValue;
   }
-  public stop() {
-    window.clearInterval(this.interval);
+}
+
+/**
+ * A bezier curve interpolator implementation
+ */
+export class BezierInterpolator extends Interpolator<BezierInterpolatorValue> {
+
+  protected complete$ = new Subject<Vector>();
+
+  constructor(
+    protected duration: number,
+    protected curve: BezierCurve,
+    tick: number = AnimationPeriod
+  ) {
+    super(tick);
   }
 
-  public interpolate() {
-    if (this.current >= this.time) {
+  /**
+   * Observes the completion of the interpolator
+   * @returns an observable observing when the interpolator has completed
+   */
+  public complete(): Observable<Vector> {
+    return this.complete$.asObservable();
+  }
+
+  /**
+   * Bezier interpolator implementation
+   * @param time the time along the interpolation
+   */
+  public interpolate(time: number): BezierInterpolatorValue {
+    const t = Math.min(time, this.duration) / this.duration;
+    const value = {
+      point: this.curve.evaluate(t),
+      t
+    } as BezierInterpolatorValue;
+    if (time >= this.duration) {
       this.stop();
-      this.complete(this.curve.evaluate(1));
-    } else {
-      const t = this.current / this.time;
-      this.update(this.curve.evaluate(t), t);
-      this.current += this.tick;
+      this.complete$.next(value.point);
     }
+    return value;
   }
 }
