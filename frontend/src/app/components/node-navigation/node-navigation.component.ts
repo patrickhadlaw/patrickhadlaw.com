@@ -25,7 +25,7 @@ export class NodeNavigationComponent implements AfterViewInit, OnDestroy {
   }
 
   public get active(): boolean {
-    return this.renderer != null && this.renderer.isRunning();
+    return this.renderer != null && !this.renderer.isMasking() && this.renderer.isRunning();
   }
 
   @ViewChild('container') container: ElementRef;

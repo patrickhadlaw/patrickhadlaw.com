@@ -160,6 +160,14 @@ export class NodeNavigationRenderer extends ContinuousInterpolator {
   }
 
   /**
+   * Whether the canvas mask is active or not
+   * @returns true if canvas mask is active
+   */
+  public isMasking(): boolean {
+    return this.maskRadius > 0;
+  }
+
+  /**
    * Get the stream of animation events
    * @returns an observable streaming animation events
    */
