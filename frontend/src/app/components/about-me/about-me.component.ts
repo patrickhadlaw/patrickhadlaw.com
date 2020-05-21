@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { ContactMeRequest, SocialLinks } from '../model/api.model';
-import { ApiService } from '../services/api/api.service';
+import { ContactMeRequest, SocialLinks } from '../../model/api.model';
+import { ApiService } from '../../services/api/api.service';
 
 enum SendState {
   NotSent = 'not-sent',

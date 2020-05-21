@@ -14,6 +14,7 @@ export class ScrollXDirective {
   onScroll(event: WheelEvent) {
     this.element.nativeElement.scrollLeft -= event.deltaY / 4;
     this.totalMove += event.deltaY;
+    event.preventDefault();
   }
 
   @HostListener('touchstart', ['$event'])

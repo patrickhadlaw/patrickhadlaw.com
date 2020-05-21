@@ -89,8 +89,9 @@
     <b class="textbox-title">Message:</b>
     <textarea #messageContent type="text" [style.height.px]="150" class="contact-textbox white"
       style="resize: vertical; min-height: 2cm" placeholder="Your message.."></textarea>
-    <div (click)="sendMessage()" [class.failure]="sendState === 'failure'" [class.success]="sendState === 'success'">
-      Send</div>
+    <div (click)="sendMessage()" class="submit-button" [class.failure]="sendState === 'failure'" [class.success]="sendState === 'success'">
+      Send
+    </div>
   </app-banner>
   <div class="footer">
     Copyright Patrick Hadlaw 2018 ©

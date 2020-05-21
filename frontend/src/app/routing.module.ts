@@ -1,12 +1,12 @@
 import { ModuleWithProviders, InjectionToken, Component, NgModule } from '@angular/core';
 import { RouterModule, Routes, ActivatedRouteSnapshot } from '@angular/router';
 
-import { AboutMeComponent } from './components/about-me.component';
-import { AppComponent } from './components/app.component';
-import { NodeNavigationComponent } from './components/node-navigation.component';
+import { AboutMeComponent } from './components/about-me/about-me.component';
+import { AppComponent } from './components/app/app.component';
+import { NodeNavigationComponent } from './components/node-navigation/node-navigation.component';
 
-import { ExperienceComponent } from './components/experience.component';
-import { SkillsComponent } from './components/skills.component';
+import { ExperienceComponent } from './components/experience/experience.component';
+import { SkillsComponent } from './components/skills/skills.component';
 
 @Component({
   template: ''
