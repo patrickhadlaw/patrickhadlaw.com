@@ -120,7 +120,7 @@ export class NodeNavigationRenderer extends ContinuousInterpolator {
       }
     });
     this.nodeNavigationService.pageOpened().pipe(takeUntil(this.destroy$)).subscribe(node => {
-      if (this.isRunning()) {
+      if (this.isRunning() && node.type === NavigationNodeType.Route) {
         this.runMaskExpandAnimation(node);
       }
     });

@@ -4,6 +4,7 @@ import { Directive, Input, Type, ViewContainerRef, ComponentFactoryResolver, OnI
   selector: '[appDynamicRenderer]'
 })
 export class DynamicRendererDirective implements OnInit {
+
   @Input('appDynamicRenderer') type: Type<any>;
 
   private _component: ComponentRef<any>;
@@ -21,5 +22,4 @@ export class DynamicRendererDirective implements OnInit {
     const factory = this.componentFactoryResolver.resolveComponentFactory(this.type);
     this._component = this.viewContainerRef.createComponent(factory);
   }
-
 }
