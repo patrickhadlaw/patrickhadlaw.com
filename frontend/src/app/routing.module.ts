@@ -49,7 +49,7 @@ const appRoutes: Routes = [
   }
 ];
 
-const Router: ModuleWithProviders = RouterModule.forRoot(appRoutes);
+const Router: ModuleWithProviders = RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' });
 
 @NgModule({
   declarations: [EmptyComponent],

@@ -18,7 +18,7 @@ import { DynamicRendererDirective } from '../../directive/dynamic-renderer.direc
   exports: [NodeNavigationComponent, DynamicRendererDirective]
 })
 export class NodeNavigationModule {
-  static forRoot(config: NavigationNodeConfig): ModuleWithProviders {
+  static forRoot(config: NavigationNodeConfig): ModuleWithProviders<NodeNavigationModule> {
     return {
       ngModule: NodeNavigationModule,
       providers: [
