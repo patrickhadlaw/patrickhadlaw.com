@@ -17,6 +17,8 @@ import { NodeNavigationService } from './services/node-navigation/node-navigatio
 import { NodeNavigationModule } from './services/node-navigation/node-navigation.module';
 import { navigation } from './model/node-navigation.model';
 import { ApiService } from './services/api/api.service';
+import { ShelfComponent } from './components/shelf/shelf.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -29,13 +31,15 @@ import { ApiService } from './services/api/api.service';
     HeroComponent,
     BannerComponent,
     ImageButtonComponent,
-    ScrollXDirective
+    ScrollXDirective,
+    ShelfComponent
   ],
   imports: [
     MatButtonModule,
     HttpClientModule,
     BrowserModule,
     RoutingModule,
+    FontAwesomeModule,
     NodeNavigationModule.forRoot(navigation)
   ],
   providers: [

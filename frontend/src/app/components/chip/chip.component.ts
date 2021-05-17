@@ -1,4 +1,6 @@
-import { Component, Input, OnInit, HostBinding } from '@angular/core';
+import { Component, HostBinding, Input, OnInit } from '@angular/core';
+
+type SizeInput = 'mini' | 'medium' | 'large';
 
 @Component({
   selector: 'app-chip',
@@ -6,56 +8,42 @@ import { Component, Input, OnInit, HostBinding } from '@angular/core';
   styleUrls: ['./chip.component.scss']
 })
 export class ChipComponent implements OnInit {
-  originalSize = 'normal';
-  size = 'normal';
-  @Input('size') set sizeInput(size: string) {
-    this.originalSize = size;
-    this.size = this.originalSize;
+
+  restoreSize: SizeInput = 'medium';
+  size: SizeInput = 'medium';
+  width = 0;
+  clicked = false;
+
+  @Input('size') set sizeInput(size: SizeInput) {
+    this.restoreSize = size;
+    this.size = this.restoreSize;
   }
-  get mini(): boolean {
-    return this.size === 'mini';
+  @Input() clickSize?: SizeInput;
+  @Input() src = '';
+  @Input() header = '';
+
+  @HostBinding('style.width') get hostWidth(): string {
+    return this.size === 'mini' ? 'unset' : '100%';
   }
-  get large(): boolean {
-    return this.size === 'large';
-  }
-  get postfix(): string {
-    switch (this.size) {
-      case 'mini':
-      case 'large':
-        return ' ' + this.size;
-      default:
-        return '';
-    }
-  }
+
   get imageSize(): number {
     switch (this.size) {
       case 'mini':
         return 0;
-      case 'large':
+      case 'medium':
+        return 75;
+      default:
         return 150;
-      default:
-        return 37.5;
     }
   }
-  @HostBinding('style.width') get widthString(): string {
-    switch (this.size) {
-      case 'mini':
-        return 'auto';
-      case 'large':
-        return '80%';
-      default:
-        return '20%';
-    }
-  }
-  @Input() clickSize = '';
-  get clickable(): boolean {
-    return this.clickSize.length > 0;
-  }
-  @Input() src = '';
-  @Input() header = '';
 
-  width = 0;
-  clicked = false;
+  get showImage(): boolean {
+    return this.src.length > 0 && this.size !== 'mini' && this.width > 800;
+  }
+
+  get clickable(): boolean {
+    return this.clickSize != null;
+  }
 
   constructor() { }
 
@@ -66,7 +54,7 @@ export class ChipComponent implements OnInit {
     });
     window.addEventListener('click', () => {
       if (!this.clicked) {
-        this.size = this.originalSize;
+        this.size = this.restoreSize;
       } else {
         this.clicked = false;
       }
@@ -74,11 +62,11 @@ export class ChipComponent implements OnInit {
   }
 
   onClick(event: MouseEvent) {
-    if (this.clickSize.length > 0) {
-      if (this.size === this.originalSize) {
+    if (this.clickSize != null) {
+      if (this.size === this.restoreSize) {
         this.size = this.clickSize;
       } else {
-        this.size = this.originalSize;
+        this.size = this.restoreSize;
       }
     }
     this.clicked = true;

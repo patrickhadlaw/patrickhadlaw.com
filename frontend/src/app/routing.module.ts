@@ -2,8 +2,6 @@ import { ModuleWithProviders, InjectionToken, Component, NgModule } from '@angul
 import { RouterModule, Routes, ActivatedRouteSnapshot } from '@angular/router';
 
 import { AboutMeComponent } from './components/about-me/about-me.component';
-import { AppComponent } from './components/app/app.component';
-import { NodeNavigationComponent } from './components/node-navigation/node-navigation.component';
 
 import { ExperienceComponent } from './components/experience/experience.component';
 import { SkillsComponent } from './components/skills/skills.component';
@@ -49,7 +47,7 @@ const appRoutes: Routes = [
   }
 ];
 
-const Router: ModuleWithProviders = RouterModule.forRoot(appRoutes);
+const Router: ModuleWithProviders<RouterModule> = RouterModule.forRoot(appRoutes, { relativeLinkResolution: 'legacy' });
 
 @NgModule({
   declarations: [EmptyComponent],

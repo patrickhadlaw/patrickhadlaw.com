@@ -113,7 +113,9 @@ export class NodeNavigationComponent implements AfterViewInit, OnDestroy {
 
   @HostListener('document:mouseleave')
   public onMouseLeave() {
-    this.renderer.mouse = new Vector(Infinity, Infinity);
+    if (this.renderer) {
+      this.renderer.mouse = new Vector(Infinity, Infinity);
+    }
   }
 
   @HostListener('window:touchstart', ['$event'])
@@ -139,6 +141,18 @@ export class NodeNavigationComponent implements AfterViewInit, OnDestroy {
   @HostListener('window:touch')
   public onTouch() {
     this.handleClick();
+  }
+
+  /**
+   * Handler for component touch move events - needed to call prevent default
+   * when overlay is active to disable browser gestures
+   * @param event the touch event
+   */
+  @HostListener('touchmove', ['$event'])
+  public onComponentTouchMove(event: TouchEvent) {
+    if (this.active) {
+      event.preventDefault();
+    }
   }
 
   public retractPage() {

@@ -17,8 +17,16 @@ export class NodeNavigationService {
     const root = NavigationNode.fromConfig(config);
     this.root$ = new BehaviorSubject<NavigationNode>(root);
     this.router.events.pipe(filter(event => event instanceof NavigationStart), first()).subscribe((event: NavigationStart) => {
-      const found = root.find(node => node.route === event.url);
-      this.group$ = new BehaviorSubject<NavigationNode>(found != null ? found : root);
+      const found = root.find(node => node.route === event.url.split('#')[0]);
+      if (found != null) {
+        if (found.children.length > 0) {
+          this.group$ = new BehaviorSubject<NavigationNode>(found);
+        } else {
+          this.group$ = new BehaviorSubject<NavigationNode>(found.parent);
+        }
+      } else {
+        this.group$ = new BehaviorSubject<NavigationNode>(root);
+      }
       this.openedPage = found;
     });
   }

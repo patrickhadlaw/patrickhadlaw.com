@@ -14,7 +14,7 @@ jobs:
       working-directory: ./frontend
     strategy:
       matrix:
-        node-version: [12.x]
+        node-version: [14.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: [1.13.x]
+        go-version: [1.16.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -47,5 +47,5 @@ jobs:
 
     - name: Build backend
       run: |
-        go get golang.org/x/crypto/acme/autocert
+        go get .
         go build patrick-hadlaw-server.go

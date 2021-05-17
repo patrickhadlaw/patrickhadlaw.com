@@ -3,8 +3,48 @@
     <div class="patrickhadlaw styles logo" [style.fontSize.cm]="1.0">My Work Experience</div>
   </div>
   <app-color-bar colorA="#000000" colorB="#f2f2f2"></app-color-bar>
-  <div class="stack">
-    <app-chip src="../../assets/mda.png" header="TD Innovation Lab" size="large">
+  <div class="stack container">
+    <app-chip src="../../assets/monogram.png" header="Monogram" size="large">
+      <div class="date">From: Sept 2020 - Dec 2020</div>
+      <div class="content">
+        <b>Title: Software Developer</b><br/>
+        During my time at Monogram I worked on developing powerful software integrations for Monogram's
+        main product: the Monogram Creative Console &mdash; a modular peripheral device aimed toward creative
+        professionals (check it out on <a href="https://monogramcc.com/">the Monogram website</a>). The Monogram
+        Creative Console provides superior functionality over typical HID devices by providing
+        direct software integrations into many professional applications &mdash; some examples include many Adobe
+        cloud applications (Premier, Photoshop, Lightroom, etc...) and Unreal Engine (for real-time virtual production).
+        My role during this work term is best describes as a full stack developer &mdash; I worked on the
+        desktop application, the desktop service, the Adobe integrations and the Unreal Engine integration. I also
+        identified the software deployment process as a high-risk point-of-failure and developed
+        an automated continuous deployment system featuring:
+        <ul>
+          <li>Qt app and firmware signing/notarization</li>
+          <li>three release channels: alpha, beta and public</li>
+          <li>five deployment types: build, sign, preview, stage, deploy</li>
+          <li>an enforced version control policy</li>
+          <li>a manual trigger and an automatic preview deployment scheduled every week</li>
+        </ul>
+        During this work term I worked with the following technologies:
+      </div>
+      <div class="wrapper">
+        <div (click)="scrollerMonogram.scrollRight()" class="controls right">
+          <fa-icon [icon]="RightIcon" size="lg"></fa-icon>
+        </div>
+        <div (click)="scrollerMonogram.scrollLeft()" class="controls left">
+          <fa-icon [icon]="LeftIcon" size="lg"></fa-icon>
+        </div>
+        <div #scrollerMonogram=scrollX appScrollX class="list">
+          <app-chip size="mini" header="Qt"></app-chip>
+          <app-chip size="mini" header="Node.js"></app-chip>
+          <app-chip size="mini" header="Node.js Native"></app-chip>
+          <app-chip size="mini" header="Unreal Engine"></app-chip>
+          <app-chip size="mini" header="GitHub Actions"></app-chip>
+        </div>
+        <div class="gradient"></div>
+      </div>
+    </app-chip>
+    <app-chip src="../../assets/mda.png" header="MDA Systems" size="large">
       <div class="date">From: May 2019 - Aug 2019 and Jan 2020 - April 2020</div>
       <div class="content">
         <b>Title: Full Stack Developer</b><br/>
@@ -12,16 +52,25 @@
         system for NATO. This system ran on a micro service architecture using Kubernetes with a Java backend and
         a MongoDB database. During my work terms I became exposed to various problems in a rapidly growing project.
         This gave me lots of opportunies to take part in the design and development of many components within the
-        peoject. During this work term I worked with the following technologies:
+        project. During this work term I worked with the following technologies:
       </div>
-      <div appScrollX class="list">
-        <app-chip size="mini" header="Kubernetes"></app-chip>
-        <app-chip size="mini" header="Docker"></app-chip>
-        <app-chip size="mini" header="Java"></app-chip>
-        <app-chip size="mini" header="MongoDB"></app-chip>
-        <app-chip size="mini" header="Kafka"></app-chip>
-        <app-chip size="mini" header="Unit Testing"></app-chip>
-        <app-chip size="mini" header="BDD Testing"></app-chip>
+      <div class="wrapper">
+        <div (click)="scrollerMDA.scrollRight()" class="controls right">
+          <fa-icon [icon]="RightIcon" size="lg"></fa-icon>
+        </div>
+        <div (click)="scrollerMDA.scrollLeft()" class="controls left">
+          <fa-icon [icon]="LeftIcon" size="lg"></fa-icon>
+        </div>
+        <div #scrollerMDA=scrollX appScrollX class="list">
+          <app-chip size="mini" header="Kubernetes"></app-chip>
+          <app-chip size="mini" header="Docker"></app-chip>
+          <app-chip size="mini" header="Java"></app-chip>
+          <app-chip size="mini" header="MongoDB"></app-chip>
+          <app-chip size="mini" header="Kafka"></app-chip>
+          <app-chip size="mini" header="Unit Testing"></app-chip>
+          <app-chip size="mini" header="BDD Testing"></app-chip>
+        </div>
+        <div class="gradient"></div>
       </div>
     </app-chip>
     <app-chip src="../../assets/tdlab.jpg" header="TD Innovation Lab" size="large">
@@ -32,17 +81,26 @@
         the design process during product design hackathons. During this work term I worked with the following
         technologies:
       </div>
-      <div appScrollX class="list">
-        <app-chip size="mini" header="Android"></app-chip>
-        <app-chip size="mini" header="IOS"></app-chip>
-        <app-chip size="mini" header="Firebase"></app-chip>
-        <app-chip size="mini" header="Chrome Extensions"></app-chip>
-        <app-chip size="mini" header="Python"></app-chip>
-        <app-chip size="mini" header="Flask"></app-chip>
-        <app-chip size="mini" header="Node.js"></app-chip>
-        <app-chip size="mini" header="Optimization"></app-chip>
-        <app-chip size="mini" header="Angular 2"></app-chip>
-        <app-chip size="mini" header="Vue.js"></app-chip>
+      <div class="wrapper">
+        <div (click)="scrollerTD.scrollRight()" class="controls right">
+          <fa-icon [icon]="RightIcon" size="lg"></fa-icon>
+        </div>
+        <div (click)="scrollerTD.scrollLeft()" class="controls left">
+          <fa-icon [icon]="LeftIcon" size="lg"></fa-icon>
+        </div>
+        <div #scrollerTD=scrollX appScrollX class="list">
+          <app-chip size="mini" header="Android"></app-chip>
+          <app-chip size="mini" header="IOS"></app-chip>
+          <app-chip size="mini" header="Firebase"></app-chip>
+          <app-chip size="mini" header="Chrome Extensions"></app-chip>
+          <app-chip size="mini" header="Python"></app-chip>
+          <app-chip size="mini" header="Flask"></app-chip>
+          <app-chip size="mini" header="Node.js"></app-chip>
+          <app-chip size="mini" header="Optimization"></app-chip>
+          <app-chip size="mini" header="Angular 2"></app-chip>
+          <app-chip size="mini" header="Vue.js"></app-chip>
+        </div>
+        <div class="gradient"></div>
       </div>
     </app-chip>
     <app-chip src="../../assets/sony.jpg" header="Sony Electronics" size="large">
@@ -53,14 +111,23 @@
         development as well as developing with microphone arrays and audio processing. During this work term I worked
         with the following technologies:
       </div>
-      <div appScrollX class="list">
-        <app-chip size="mini" header="Angular 2"></app-chip>
-        <app-chip size="mini" header="Typescript"></app-chip>
-        <app-chip size="mini" header="Python"></app-chip>
-        <app-chip size="mini" header="Flask"></app-chip>
-        <app-chip size="mini" header="Audio programming"></app-chip>
-        <app-chip size="mini" header="AWS"></app-chip>
-        <app-chip size="mini" header="WebSockets"></app-chip>
+      <div class="wrapper">
+        <div (click)="scrollerSony.scrollRight()" class="controls right">
+          <fa-icon [icon]="RightIcon" size="lg"></fa-icon>
+        </div>
+        <div (click)="scrollerSony.scrollLeft()" class="controls left">
+          <fa-icon [icon]="LeftIcon" size="lg"></fa-icon>
+        </div>
+        <div #scrollerSony=scrollX appScrollX class="list">
+          <app-chip size="mini" header="Angular 2"></app-chip>
+          <app-chip size="mini" header="Typescript"></app-chip>
+          <app-chip size="mini" header="Python"></app-chip>
+          <app-chip size="mini" header="Flask"></app-chip>
+          <app-chip size="mini" header="Audio programming"></app-chip>
+          <app-chip size="mini" header="AWS"></app-chip>
+          <app-chip size="mini" header="WebSockets"></app-chip>
+        </div>
+        <div class="gradient"></div>
       </div>
     </app-chip>
   </div>

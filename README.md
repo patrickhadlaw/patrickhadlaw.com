@@ -1,11 +1,11 @@
-# Patrick Hadlaw personal résumé website
+# Patrick Hadlaw personal resume website
 
 ## Prerequisites
 
 * Docker + Docker Compose
 * npm - nodejs
 
-## Liscensing
+## Licensing
 
 ### This project is licensed under the provided license - see the [LICENSE](LICENSE) file for details
 
@@ -33,7 +33,7 @@ $ docker push <image:tag>
 * To be able to use contact features a mail server will need to be hosted
 * When running server `--mail` flag should be set to your smtp-host name `--smtp-port` should be set and `--smtp` should be set to your smtp server
 * Upon running server you will be prompted for password and email for the target contact email address
-* Resume should be placed in project/com/assets dir as RESUME.pdf
+* Resume should be placed in `./frontend/dist/assets` directory as RESUME.pdf before building docker image
 
 ## Run instructions
 ```

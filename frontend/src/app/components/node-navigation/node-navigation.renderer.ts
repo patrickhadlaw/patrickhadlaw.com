@@ -28,7 +28,7 @@ export class NodeNavigationRenderer extends ContinuousInterpolator {
   readonly GradientEnd = 'rgb(92, 0, 230)';
 
   readonly ExpandPercent = 50;
-  readonly ExpandTime = 1000;
+  readonly ExpandTime = 750;
   readonly MaximumVelocity = 0.25;
 
   public nodeViews: NavigationNodeView[] = [];
@@ -105,10 +105,12 @@ export class NodeNavigationRenderer extends ContinuousInterpolator {
       this.update();
       this.render();
     });
-    this.nodeNavigationService.group().pipe(first()).subscribe(node => {
-      this.root = node;
-      this.current = node;
-      this.initialize();
+    this.nodeNavigationService.root().pipe(first()).subscribe(root => {
+      this.root = root;
+      this.nodeNavigationService.group().pipe(first()).subscribe(group => {
+        this.current = group;
+        this.initialize();
+      });
     });
     this.nodeNavigationService.group().pipe(takeUntil(this.destroy$), skip(1)).subscribe(node => {
       const lastNode = this.current;
@@ -120,7 +122,7 @@ export class NodeNavigationRenderer extends ContinuousInterpolator {
       }
     });
     this.nodeNavigationService.pageOpened().pipe(takeUntil(this.destroy$)).subscribe(node => {
-      if (this.isRunning()) {
+      if (this.isRunning() && node.type === NavigationNodeType.Route) {
         this.runMaskExpandAnimation(node);
       }
     });
