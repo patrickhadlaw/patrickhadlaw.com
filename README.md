@@ -30,9 +30,8 @@ $ docker push <image:tag>
 ```
 
 ### Setup
-* To be able to use contact features a mail server will need to be hosted
-* When running server `--mail` flag should be set to your smtp-host name `--smtp-port` should be set and `--smtp` should be set to your smtp server
-* Upon running server you will be prompted for password and email for the target contact email address
+* To be able to use contact features a mail host will need to be configured with an email account to send contact messages from, this email must be configured in the environment variables as shown in `.env`
+* When running server the `.env` environment variable file should be configured properly
 * Resume should be placed in `./frontend/dist/assets` directory as RESUME.pdf before building docker image
 
 ## Run instructions
