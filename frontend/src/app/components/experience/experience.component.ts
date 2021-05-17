@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { faChevronCircleLeft, faChevronCircleRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-experience',
@@ -6,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./experience.component.scss']
 })
 export class ExperienceComponent {
-
+  readonly RightIcon = faChevronCircleRight;
+  readonly LeftIcon = faChevronCircleLeft;
 }

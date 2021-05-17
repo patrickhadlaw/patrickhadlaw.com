@@ -223,10 +223,10 @@ export const navigation: NavigationNodeConfig = {
       description: 'Click here to see some of my side projects on Github',
       children: [
         {
-          name: 'cpp-opengl',
-          description: 'A real-time GUI and 3D renderer',
+          name: 'RGLEngine',
+          description: 'A real-time GUI and 3D renderer featuring GPU accelerated raytracing',
           route: '/external',
-          extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-opengl' } as NavigationExtras
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/RGLEngine' } as NavigationExtras
         },
         {
           name: 'cpp-vulkan',
@@ -241,10 +241,10 @@ export const navigation: NavigationNodeConfig = {
           extras: { externalUrl: 'https://github.com/patrickhadlaw/The-Brachistochrone-Curve' } as NavigationExtras
         },
         {
-          name: 'py-mod-sort',
-          description: 'Sorting algorithm visualization',
+          name: 'drumbeat-rs',
+          description: 'A published rust async and event crate targeted towards game engines',
           route: '/external',
-          extras: { externalUrl: 'https://github.com/patrickhadlaw/py-mod-sort' } as NavigationExtras
+          extras: { externalUrl: 'https://github.com/patrickhadlaw/drumbeat-rs' } as NavigationExtras
         },
         {
           name: 'motionpong',

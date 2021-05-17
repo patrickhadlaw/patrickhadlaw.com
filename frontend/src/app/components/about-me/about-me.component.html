@@ -9,7 +9,7 @@
           <div class="header-button">Contact</div>
         </a>
         <a href="../assets/RESUME.pdf" download="RESUME.pdf" style="text-decoration: none;">
-          <div class="header-button">Résumé</div>
+          <div class="header-button">Resume</div>
         </a>
       </div>
     </div>
@@ -18,15 +18,15 @@
   <app-color-bar colorA="#000000" colorB="#f2f2f2"></app-color-bar>
 
   <app-hero src="../assets/avatar.jpg" backgroundColor="rgb(250, 250, 250)" color="rgb(50, 50, 50)">
-    Hello, I'm an Engineering student from the town of Wolfville, Nova Scotia.
-    I enjoy building software applications ranging from front-end and back-end software to computer graphics and
-    hardware level software.<br />
-    If your looking for a co-op student experienced with the full development cycle and willing to attack your software
-    development needs, feel free to get in touch with me.<br />
-    <b>A copy of my résumé and my contact information can be found below.</b>
+    Hello, I'm a Computer Engineering student who is enthusiastic about technology, solving real world problems and learning
+    more about the world in general. I'm fascinated by a broad range of computer topics including: web development,
+    computer graphics, systems programming and hardware design.<br>
+    If your looking for a co-op student experienced with the full development process with a generalized set of knowledge
+    and interests, feel free to get in touch.<br>
+    <b>A copy of my resume and my contact information can be found below.</b>
   </app-hero>
 
-  <br /><br /><br /><br />
+  <br><br><br><br>
 
   <app-banner color="rgb(50, 50, 50)" backgroundColor="rgb(250, 250, 250)">
     <div class="row-wrapper">
@@ -47,16 +47,16 @@
       </a>
     </div>
 
-    <br /><br />
+    <br><br>
 
     <div class="row-wrapper">
-      <app-image-button [style.margin]="'20px'" header="Résumé" href="../assets/RESUME.pdf" download="RESUME.pdf"
-        size="240" src="../assets/resume.png" button="Download">My résumé</app-image-button>
+      <app-image-button [style.margin]="'20px'" header="Resume" href="../assets/RESUME.pdf" download="RESUME.pdf"
+        size="240" src="../assets/resume.png" button="Download">My resume</app-image-button>
       <app-image-button [style.margin]="'20px'" href="https://github.com/patrickhadlaw/patrickhadlaw.com" size="240"
         src="../assets/website.png" button="Click here">Website repository</app-image-button>
     </div>
 
-    <br />
+    <br>
 
     <div class="quote-container">
       <div style="max-width: 20cm; margin-left: 1cm; margin-right: 1cm; text-align: center;">
@@ -67,25 +67,25 @@
     </div>
 
     <img src="../assets/angular.svg" [style.width.cm]="4" [style.marginTop.cm]="1" />
-    <br />
-    <b [style.fontSize.px]="18" [style.marginBottom.cm]="2.5">This site was built using Angular 9</b>
+    <br>
+    <b [style.fontSize.px]="18" [style.marginBottom.cm]="2.5">This site was built using Angular 11</b>
 
     <div class="contact-container">
       <a name="contact">
         <h1>Contact</h1>
       </a>
-      <b>Phone: 1(902)670-4383</b><br />
-      <b>Email: pshadlaw@uwaterloo.ca</b><br />
+      <b>Phone: 1(902)670-4383</b><br>
+      <b>Email: pshadlaw@uwaterloo.ca</b><br>
     </div>
 
     <h1>Send message</h1>
 
     <b class="textbox-title">Full name:</b>
     <input #messageName type="text" placeholder="Your full name.." class="contact-textbox" />
-    <br />
+    <br>
     <b class="textbox-title">Email:</b>
     <input #messageEmail type="text" placeholder="Your email address.." class="contact-textbox" />
-    <br /><br />
+    <br><br>
     <b class="textbox-title">Message:</b>
     <textarea #messageContent type="text" [style.height.px]="150" class="contact-textbox white"
       style="resize: vertical; min-height: 2cm" placeholder="Your message.."></textarea>
