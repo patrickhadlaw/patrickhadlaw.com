@@ -43,7 +43,7 @@ export class ScrollXDirective {
     for (const element of Array.from(this.element.nativeElement.childNodes).reverse() as HTMLElement[]) {
       const rect = element.getBoundingClientRect();
       if (rect != null) {
-        const x = rect.left - this.element.nativeElement.getBoundingClientRect().left;
+        const x = Math.floor(rect.left - this.element.nativeElement.getBoundingClientRect().left);
         if (x + rect.width < 0) {
           this.element.nativeElement.scrollLeft += x;
           break;
@@ -59,7 +59,7 @@ export class ScrollXDirective {
     for (const element of this.element.nativeElement.childNodes as HTMLElement[]) {
       const rect = element.getBoundingClientRect();
       if (rect != null) {
-        const x = rect.left - this.element.nativeElement.getBoundingClientRect().left;
+        const x = Math.floor(rect.left - this.element.nativeElement.getBoundingClientRect().left);
         if (x > 0) {
           this.element.nativeElement.scrollLeft += x;
           break;

@@ -28,13 +28,11 @@
   padding: 0.265cm 0.53cm;
   font-size: 0.3175cm;
   text-decoration: none;
+  user-select: none;
   &:hover {
     color: purple;
     background-color: white;
     cursor: pointer;
-  }
-  &::selection {
-    background: none;
   }
 }
 a > .header-button {
@@ -81,8 +79,8 @@ a > .header-button {
   flex-direction: column;
   align-items: center;
   background-image: linear-gradient(to bottom right, blue, purple);
-  padding-top: 0.5cm;
-  padding-bottom: 1cm;
+  padding-top: 1cm;
+  padding-bottom: 1.5cm;
   color: white;
   margin-bottom: 1cm;
   width: 100%;
@@ -145,6 +143,7 @@ a > .header-button {
   margin-left: 0.225cm;
   margin-right: 0.225cm;
   padding: 0.265cm 0.53cm;
+  user-select: none;
   &:hover {
     color: white;
     background-color: black;
@@ -152,9 +151,6 @@ a > .header-button {
   }
   &:active {
     border: 0.0525cm solid black;
-  }
-  &::selection {
-    background: none;
   }
   &.success {
     animation: success 2s;

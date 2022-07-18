@@ -41,11 +41,13 @@
         &.left {
           left: 0;
           align-items: flex-start;
+          user-select: none;
         }
 
         &.right {
           right: 0;
           align-items: flex-end;
+          user-select: none;
         }
 
         fa-icon {

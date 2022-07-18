@@ -4,6 +4,33 @@
   </div>
   <app-color-bar colorA="#000000" colorB="#f2f2f2"></app-color-bar>
   <div class="stack container">
+    <app-chip src="../../assets/amd.png" header="AMD" size="large">
+      <div class="date">From: Sept 2021 - Dec 2021</div>
+      <div class="content">
+        <b>Title: Kernel Graphics Driver Developer</b><br/>
+        During my time at AMD I went from no experience with the Windows kernel driver stack to implementing
+        a prototype performance feature in just one work term. I learned about the kernel perspective on the
+        graphics pipeline and how GPU workloads are managed and sent from the OS perspective. I also learned
+        about the Windows Display Driver Model and how memory and escape calls are handled in the Windows
+        driver architecture, as well as how to debug difficult issues (such as GPU fence synchronization
+        issues) using the Windows kernel debugger WinDbg.
+        During this work term I worked with the following technologies:
+      </div>
+      <div class="wrapper">
+        <div (click)="scrollerAMD.scrollRight()" class="controls right">
+          <fa-icon [icon]="RightIcon" size="lg"></fa-icon>
+        </div>
+        <div (click)="scrollerAMD.scrollLeft()" class="controls left">
+          <fa-icon [icon]="LeftIcon" size="lg"></fa-icon>
+        </div>
+        <div #scrollerAMD=scrollX appScrollX class="list">
+          <app-chip size="mini" header="C/C++"></app-chip>
+          <app-chip size="mini" header="WDDM"></app-chip>
+          <app-chip size="mini" header="WinDbg"></app-chip>
+        </div>
+        <div class="gradient"></div>
+      </div>
+    </app-chip>
     <app-chip src="../../assets/monogram.png" header="Monogram" size="large">
       <div class="date">From: Sept 2020 - Dec 2020</div>
       <div class="content">
