@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/time/rate"
 )
 
 // LoggingResponseWriter is a response writer that logs requests
@@ -126,33 +127,39 @@ func main() {
 
 	serveMux.Handle("/api/", http.StripPrefix("/api", apiMux))
 
+	var limiter = rate.NewLimiter(1, 1)
+
 	apiMux.HandleFunc("/message/send", func(w http.ResponseWriter, r *http.Request) {
-		var contactMeRequest ContactMeRequest
-		decoder := json.NewDecoder(r.Body)
-		err := decoder.Decode(&contactMeRequest)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-		} else {
-			auth := smtp.PlainAuth("", mailUser, mailPassword, smtpHost)
-			msg := []byte("From: " + "contact@" + domain + "\r\n" +
-				"To: " + contactEmail + "\r\n" +
-				"Subject: Contact message\r\n\r\n" +
-				"Contact message from patrickhadlaw.com\r\n" +
-				"Name: " + contactMeRequest.Name + "\r\n" +
-				"Email: " + contactMeRequest.Email + "\r\n" +
-				"\r\nMessage: " + contactMeRequest.Message)
-			err = smtp.SendMail(
-				fmt.Sprintf("%s:%d", smtpHost, smtpPort),
-				auth,
-				contactEmail,
-				[]string{contactEmail},
-				msg)
+		if limiter.Allow() {
+			var contactMeRequest ContactMeRequest
+			decoder := json.NewDecoder(r.Body)
+			err := decoder.Decode(&contactMeRequest)
 			if err != nil {
-				log.Printf("ERROR: failed to send mail: %s", err.Error())
-				w.WriteHeader(http.StatusInternalServerError)
+				w.WriteHeader(http.StatusBadRequest)
 			} else {
-				log.Printf("Sent message from: %s with email: %s", contactMeRequest.Name, contactMeRequest.Email)
+				auth := smtp.PlainAuth("", mailUser, mailPassword, smtpHost)
+				msg := []byte("From: " + "contact@" + domain + "\r\n" +
+					"To: " + contactEmail + "\r\n" +
+					"Subject: Contact message\r\n\r\n" +
+					"Contact message from patrickhadlaw.com\r\n" +
+					"Name: " + contactMeRequest.Name + "\r\n" +
+					"Email: " + contactMeRequest.Email + "\r\n" +
+					"\r\nMessage: " + contactMeRequest.Message)
+				err = smtp.SendMail(
+					fmt.Sprintf("%s:%d", smtpHost, smtpPort),
+					auth,
+					contactEmail,
+					[]string{contactEmail},
+					msg)
+				if err != nil {
+					log.Printf("ERROR: failed to send mail: %s", err.Error())
+					w.WriteHeader(http.StatusInternalServerError)
+				} else {
+					log.Printf("Sent message from: %s with email: %s", contactMeRequest.Name, contactMeRequest.Email)
+				}
 			}
+		} else {
+			w.WriteHeader(http.StatusTooManyRequests)
 		}
 	})
 
