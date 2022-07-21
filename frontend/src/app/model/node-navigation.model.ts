@@ -229,10 +229,10 @@ export const navigation: NavigationNodeConfig = {
           extras: { externalUrl: 'https://github.com/patrickhadlaw/RGLEngine' } as NavigationExtras
         },
         {
-          name: 'cpp-vulkan',
-          description: 'A Vulkan API project',
+          name: 'Lawny',
+          description: 'A map learning autonomous lawnmower',
           route: '/external',
-          extras: { externalUrl: 'https://github.com/patrickhadlaw/cpp-vulkan' } as NavigationExtras
+          extras: { externalUrl: 'https://github.com/FYDP2022' } as NavigationExtras
         },
         {
           name: 'The-Brachistochrone-Curve',
