@@ -44,7 +44,7 @@ export class ScrollXDirective {
       const rect = element.getBoundingClientRect();
       if (rect != null) {
         const x = Math.floor(rect.left - this.element.nativeElement.getBoundingClientRect().left);
-        if (x + rect.width < 0) {
+        if (x < 0) {
           this.element.nativeElement.scrollLeft += x;
           break;
         }

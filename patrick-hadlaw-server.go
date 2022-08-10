@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -35,7 +34,6 @@ func (writer *LoggingResponseWriter) WriteHeader(code int) {
 
 func loggingMux(mux *http.ServeMux) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		log.Printf("--> %s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
 		writer := NewLoggingResponseWriter(w)
@@ -69,10 +67,9 @@ var AngularRoutes = [...]string{
 	"/experience",
 }
 
-// LogFile stores the filename to log to
-const LogFile = "runtime.log"
-
 func main() {
+	log.SetOutput(os.Stdout)
+
 	domain, exists := os.LookupEnv("DOMAIN")
 	if !exists {
 		log.Fatalln("environment variable 'DOMAIN' not set")
@@ -101,14 +98,6 @@ func main() {
 	if !exists {
 		log.Fatalln("environment variable 'MAIL_SERVER_PASSWORD' not set")
 	}
-
-	file, err := os.OpenFile(LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("error opening log-file: %v", err)
-	}
-
-	multiWriter := io.MultiWriter(os.Stdout, file)
-	log.SetOutput(multiWriter)
 
 	serveMux := http.NewServeMux()
 	apiMux := http.NewServeMux()
@@ -179,7 +168,7 @@ func main() {
 	}
 
 	go func() {
-		err = autocertServer.ListenAndServe()
+		err := autocertServer.ListenAndServe()
 		if err != nil {
 			log.Fatal("Failed to launch autocert http server")
 		}
@@ -192,7 +181,7 @@ func main() {
 	}
 
 	log.Println("serving patrickhadlaw.com on port:", port)
-	err = server.ListenAndServeTLS("", "")
+	err := server.ListenAndServeTLS("", "")
 	if err != nil {
 		log.Fatal("Failed to launch https server")
 	}
