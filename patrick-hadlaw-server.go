@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/time/rate"
 )
 
 // LoggingResponseWriter is a response writer that logs requests
@@ -34,7 +34,6 @@ func (writer *LoggingResponseWriter) WriteHeader(code int) {
 
 func loggingMux(mux *http.ServeMux) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		log.Printf("--> %s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 
 		writer := NewLoggingResponseWriter(w)
@@ -68,10 +67,9 @@ var AngularRoutes = [...]string{
 	"/experience",
 }
 
-// LogFile stores the filename to log to
-const LogFile = "runtime.log"
-
 func main() {
+	log.SetOutput(os.Stdout)
+
 	domain, exists := os.LookupEnv("DOMAIN")
 	if !exists {
 		log.Fatalln("environment variable 'DOMAIN' not set")
@@ -101,14 +99,6 @@ func main() {
 		log.Fatalln("environment variable 'MAIL_SERVER_PASSWORD' not set")
 	}
 
-	file, err := os.OpenFile(LogFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("error opening log-file: %v", err)
-	}
-
-	multiWriter := io.MultiWriter(os.Stdout, file)
-	log.SetOutput(multiWriter)
-
 	serveMux := http.NewServeMux()
 	apiMux := http.NewServeMux()
 
@@ -126,33 +116,39 @@ func main() {
 
 	serveMux.Handle("/api/", http.StripPrefix("/api", apiMux))
 
+	var limiter = rate.NewLimiter(1, 1)
+
 	apiMux.HandleFunc("/message/send", func(w http.ResponseWriter, r *http.Request) {
-		var contactMeRequest ContactMeRequest
-		decoder := json.NewDecoder(r.Body)
-		err := decoder.Decode(&contactMeRequest)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-		} else {
-			auth := smtp.PlainAuth("", mailUser, mailPassword, smtpHost)
-			msg := []byte("From: " + "contact@" + domain + "\r\n" +
-				"To: " + contactEmail + "\r\n" +
-				"Subject: Contact message\r\n\r\n" +
-				"Contact message from patrickhadlaw.com\r\n" +
-				"Name: " + contactMeRequest.Name + "\r\n" +
-				"Email: " + contactMeRequest.Email + "\r\n" +
-				"\r\nMessage: " + contactMeRequest.Message)
-			err = smtp.SendMail(
-				fmt.Sprintf("%s:%d", smtpHost, smtpPort),
-				auth,
-				contactEmail,
-				[]string{contactEmail},
-				msg)
+		if limiter.Allow() {
+			var contactMeRequest ContactMeRequest
+			decoder := json.NewDecoder(r.Body)
+			err := decoder.Decode(&contactMeRequest)
 			if err != nil {
-				log.Printf("ERROR: failed to send mail: %s", err.Error())
-				w.WriteHeader(http.StatusInternalServerError)
+				w.WriteHeader(http.StatusBadRequest)
 			} else {
-				log.Printf("Sent message from: %s with email: %s", contactMeRequest.Name, contactMeRequest.Email)
+				auth := smtp.PlainAuth("", mailUser, mailPassword, smtpHost)
+				msg := []byte("From: " + "contact@" + domain + "\r\n" +
+					"To: " + contactEmail + "\r\n" +
+					"Subject: Contact message\r\n\r\n" +
+					"Contact message from patrickhadlaw.com\r\n" +
+					"Name: " + contactMeRequest.Name + "\r\n" +
+					"Email: " + contactMeRequest.Email + "\r\n" +
+					"\r\nMessage: " + contactMeRequest.Message)
+				err = smtp.SendMail(
+					fmt.Sprintf("%s:%d", smtpHost, smtpPort),
+					auth,
+					contactEmail,
+					[]string{contactEmail},
+					msg)
+				if err != nil {
+					log.Printf("ERROR: failed to send mail: %s", err.Error())
+					w.WriteHeader(http.StatusInternalServerError)
+				} else {
+					log.Printf("Sent message from: %s with email: %s", contactMeRequest.Name, contactMeRequest.Email)
+				}
 			}
+		} else {
+			w.WriteHeader(http.StatusTooManyRequests)
 		}
 	})
 
@@ -172,7 +168,7 @@ func main() {
 	}
 
 	go func() {
-		err = autocertServer.ListenAndServe()
+		err := autocertServer.ListenAndServe()
 		if err != nil {
 			log.Fatal("Failed to launch autocert http server")
 		}
@@ -185,7 +181,7 @@ func main() {
 	}
 
 	log.Println("serving patrickhadlaw.com on port:", port)
-	err = server.ListenAndServeTLS("", "")
+	err := server.ListenAndServeTLS("", "")
 	if err != nil {
 		log.Fatal("Failed to launch https server")
 	}

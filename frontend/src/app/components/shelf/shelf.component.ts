@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { faChevronCircleRight, faChevronCircleDown } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -6,7 +6,7 @@ import { faChevronCircleRight, faChevronCircleDown } from '@fortawesome/free-sol
   templateUrl: './shelf.component.html',
   styleUrls: ['./shelf.component.scss']
 })
-export class ShelfComponent implements OnInit {
+export class ShelfComponent {
 
   inactiveIcon = faChevronCircleRight;
   activeIcon = faChevronCircleDown;
@@ -15,8 +15,6 @@ export class ShelfComponent implements OnInit {
   @Input() active = false;
 
   constructor() { }
-
-  ngOnInit(): void {}
 
   /**
    * Toggles the shelf

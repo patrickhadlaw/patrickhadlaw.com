@@ -34,7 +34,9 @@ export class NodeNavigationComponent implements AfterViewInit, OnDestroy {
   private _context: CanvasRenderingContext2D;
   @ViewChild('canvas') set canvas(canvas: ElementRef) {
     this._canvas = canvas;
-    this._context = canvas.nativeElement.getContext('2d');
+    this._context = canvas.nativeElement.getContext('2d', {
+      desynchronized: true
+    });
   }
   get canvas(): ElementRef {
     return this._canvas;

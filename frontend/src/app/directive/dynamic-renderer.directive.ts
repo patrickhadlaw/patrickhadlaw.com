@@ -1,4 +1,4 @@
-import { Directive, Input, Type, ViewContainerRef, ComponentFactoryResolver, OnInit, ComponentRef } from '@angular/core';
+import { Directive, Input, Type, ViewContainerRef, OnInit, ComponentRef } from '@angular/core';
 
 @Directive({
   selector: '[appDynamicRenderer]'
@@ -15,11 +15,9 @@ export class DynamicRendererDirective implements OnInit {
 
   constructor(
     private viewContainerRef: ViewContainerRef,
-    private componentFactoryResolver: ComponentFactoryResolver
   ) {}
 
   ngOnInit() {
-    const factory = this.componentFactoryResolver.resolveComponentFactory(this.type);
-    this._component = this.viewContainerRef.createComponent(factory);
+    this._component = this.viewContainerRef.createComponent(this.type);
   }
 }

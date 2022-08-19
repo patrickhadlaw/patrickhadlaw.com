@@ -38,12 +38,6 @@ const appRoutes: Routes = [
     path: 'skills',
     component: SkillsComponent,
     pathMatch: 'full'
-  },
-  {
-    path: 'cpp-opengl',
-
-    component: EmptyComponent,
-    pathMatch: 'full'
   }
 ];
 

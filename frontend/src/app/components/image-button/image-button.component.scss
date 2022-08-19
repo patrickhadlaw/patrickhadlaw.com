@@ -2,9 +2,7 @@
   background-color: white;
   overflow: hidden;
   border-radius: 10px;
-  &::selection {
-    background: none;
-  }
+  user-select: none;
 
   &.container {
     position: relative;

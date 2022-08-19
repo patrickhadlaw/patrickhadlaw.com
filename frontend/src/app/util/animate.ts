@@ -3,7 +3,7 @@ import { Vector } from './vector';
 import { Subject, timer, Observable, interval } from 'rxjs';
 import { map, filter, tap, finalize, takeUntil } from 'rxjs/operators';
 
-export const AnimationFramerate = 30;
+export const AnimationFramerate = 60;
 export const AnimationPeriod = 1000 / AnimationFramerate;
 
 /**
@@ -104,7 +104,7 @@ export class LinearInterpolator extends Interpolator<number> {
 
   protected complete$ = new Subject();
 
-  constructor(protected duration: number, tick: number = AnimationFramerate) {
+  constructor(protected duration: number, tick: number = AnimationPeriod) {
     super(tick);
   }
 

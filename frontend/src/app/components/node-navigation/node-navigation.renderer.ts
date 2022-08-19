@@ -28,7 +28,7 @@ export class NodeNavigationRenderer extends ContinuousInterpolator {
   readonly GradientEnd = 'rgb(92, 0, 230)';
 
   readonly ExpandPercent = 50;
-  readonly ExpandTime = 750;
+  readonly ExpandTime = 500;
   readonly MaximumVelocity = 0.25;
 
   public nodeViews: NavigationNodeView[] = [];
@@ -385,7 +385,7 @@ export class NodeNavigationRenderer extends ContinuousInterpolator {
     this.maskPosition.y = view.position.y;
     this.maskRadius = 0;
     this.maskOpacity = 1.0;
-    const interpolator = new LinearInterpolator(this.ExpandTime);
+    const interpolator = new LinearInterpolator(this.ExpandTime, 16);
     const done$ = new Subject();
     this.event$.next(AnimationEvent.PageExpanding);
     interpolator.value().pipe(takeUntil(done$)).subscribe(t => {
