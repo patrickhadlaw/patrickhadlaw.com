@@ -10,13 +10,17 @@ type SizeInput = 'mini' | 'medium' | 'large';
 export class ChipComponent implements OnInit {
 
   restoreSize: SizeInput = 'medium';
-  size: SizeInput = 'medium';
+  chipSize: SizeInput = 'medium';
   width = 0;
   clicked = false;
 
-  @Input('size') set sizeInput(size: SizeInput) {
-    this.restoreSize = size;
-    this.size = this.restoreSize;
+  get size(): SizeInput {
+    return this.chipSize;
+  }
+
+  @Input() set size(value: SizeInput) {
+    this.restoreSize = value;
+    this.chipSize = this.restoreSize;
   }
   @Input() clickSize?: SizeInput;
   @Input() src = '';
